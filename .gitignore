@@ -1,0 +1,26 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build directories
+build/
+dist/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Optional directories (you can add your own, like for temporary files or generated content)
+temp/
+*.bak
