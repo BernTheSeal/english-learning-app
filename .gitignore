@@ -24,3 +24,5 @@ dist/
 # Optional directories (you can add your own, like for temporary files or generated content)
 temp/
 *.bak
+
+.prettierrc

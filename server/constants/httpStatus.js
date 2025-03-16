@@ -1,4 +1,3 @@
-// constants/httpStatus.js
 const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,

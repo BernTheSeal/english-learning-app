@@ -1,86 +1,27 @@
-const User = require("../models/user.js");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const HTTP_STATUS = require("../constants/httpStatus.js");
-const {
-  sendSuccessResponse,
-  sendErrorResponse,
-} = require("../utils/responseHelper.js");
+const { sendErrorResponse, sendSuccessResponse } = require('../utils/responseHelper.js');
+const HTTP_STATUS = require('../constants/httpStatus.js');
+const User = require('../models/user.js');
 
-const register = async (req, res) => {
+const getCurrentUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    const newUser = new User({
-      username,
-      email,
-      password,
-    });
-
-    await newUser.save();
-    return sendSuccessResponse(
-      res,
-      "succesfully register ",
-      HTTP_STATUS.CREATED
-    );
-  } catch (error) {
-    console.error("error::", error.message);
-    return sendErrorResponse(
-      res,
-      "something went wrong",
-      HTTP_STATUS.INTERNAL_SERVER_ERROR
-    );
-  }
-};
-
-const login = async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-      return sendErrorResponse(
-        res,
-        "username and password required",
-        HTTP_STATUS.BAD_REQUEST
-      );
+    if (!req.user) {
+      return sendErrorResponse(res, 'token is not found', HTTP_STATUS.UNAUTHORIZED);
     }
 
-    const user = await User.findOne({ username }).select("+password");
+    const user = await User.findById(req.user.userId);
     if (!user) {
-      return sendErrorResponse(
-        res,
-        "username is not found ",
-        HTTP_STATUS.BAD_REQUEST
-      );
+      return sendErrorResponse(res, 'user is not found', HTTP_STATUS.NOT_FOUND);
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return sendErrorResponse(
-        res,
-        "password is not correct",
-        HTTP_STATUS.UNAUTHORIZED
-      );
-    }
-
-    const token = jwt.sign(
-      { userId: user._id, username },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: "1h",
-      }
-    );
-
-    return sendSuccessResponse(res, "login is succesfully ", HTTP_STATUS.OK, {
-      token,
-    });
-  } catch (error) {
-    console.error("error::", error.message);
+    return sendSuccessResponse(res, 'user is found', HTTP_STATUS.OK, user);
+  } catch (err) {
+    console.error(err.message);
     return sendErrorResponse(
       res,
-      "something went wrong",
-      HTTP_STATUS.INTERNAL_SERVER_ERROR
+      'An error occurred. Please try again later.',
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
     );
   }
 };
 
-module.exports = { register, login };
+module.exports = { getCurrentUser };

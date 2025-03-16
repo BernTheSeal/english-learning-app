@@ -1,10 +1,8 @@
-const express = require("express");
-const { register, login } = require("../controllers/userController.js");
-const registerValidator = require("../validator/registerValidator.js");
-const { rateLimiter } = require("../middlewares/rateLimiter.js");
+const express = require('express');
 const routes = express.Router();
+const ensureAuthencicated = require('../middlewares/ensureAuthenticated.js');
+const { getCurrentUser } = require('../controllers/userController.js');
 
-routes.post("/register", rateLimiter, registerValidator, register);
-routes.post("/login", rateLimiter, login);
+routes.get('/user/getCurrentUser', ensureAuthencicated, getCurrentUser);
 
 module.exports = routes;
