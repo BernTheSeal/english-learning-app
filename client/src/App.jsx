@@ -3,7 +3,9 @@ import AuthRoute from './components/AuthRoute';
 import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import Dictionary from './pages/Dictionary';
 import Dashboard from './pages/Dashboard';
+import WordDetails from './pages/WordDetails';
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
 
           <Route element={<AuthRoute type="protected" redirectTo="/login" />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dictionary" element={<Dictionary />} />
+            <Route path="/dictionary/:word" element={<WordDetails />} />
           </Route>
 
           <Route element={<AuthRoute type="redirect" redirectTo="/" />}>

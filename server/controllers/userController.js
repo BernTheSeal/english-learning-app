@@ -1,6 +1,7 @@
 const { sendErrorResponse, sendSuccessResponse } = require('../utils/responseHelper.js');
 const HTTP_STATUS = require('../constants/httpStatus.js');
 const User = require('../models/user.js');
+const SavedWords = require('../models/savedWords.js');
 
 const getCurrentUser = async (req, res) => {
   try {
@@ -13,7 +14,12 @@ const getCurrentUser = async (req, res) => {
       return sendErrorResponse(res, 'user is not found', HTTP_STATUS.NOT_FOUND);
     }
 
-    return sendSuccessResponse(res, 'user is found', HTTP_STATUS.OK, user);
+    const userSavedWords = await SavedWords.findOne({ userId: req.user.userId });
+
+    return sendSuccessResponse(res, 'user is found', HTTP_STATUS.OK, {
+      user,
+      words: userSavedWords ? userSavedWords.words : null,
+    });
   } catch (err) {
     console.error(err.message);
     return sendErrorResponse(

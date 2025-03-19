@@ -3,6 +3,7 @@ import api from '../../api/axios';
 
 const initialState = {
   user: null,
+  savedWords: null,
   error: null,
   loading: false,
 };
@@ -33,7 +34,8 @@ const userSlice = createSlice({
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         state.loading = false;
         state.error = false;
-        state.user = action.payload.data;
+        state.user = action.payload.data.user;
+        state.words = action.payload.data.words;
       })
       .addCase(getCurrentUser.rejected, (state) => {
         state.loading = false;

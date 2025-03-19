@@ -25,6 +25,9 @@ const Header = () => {
             <a href="/" className="hover:text-blue-500 transition">
               home
             </a>
+            <a href="/dictionary" className="hover:text-blue-500 transition">
+              dictionary
+            </a>
             <a href="/dashboard" className="hover:text-blue-500 transition">
               Dashboard
             </a>

@@ -48,8 +48,8 @@ api.interceptors.request.use(async (config) => {
         store.dispatch(logoutUser());
         window.location.href = '/login';
       } else {
-        accessToken = result.payload.data;
-        config.headers.Authorization = `Bearer ${accessToken}`;
+        // accessToken = result.payload.data;
+        config.headers.Authorization = `Bearer ${result.payload.data}`;
         await api(config);
       }
     } catch (error) {

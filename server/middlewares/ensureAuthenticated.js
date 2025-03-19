@@ -15,11 +15,7 @@ const ensureAuthenticated = async (req, res, next) => {
     next();
   } catch (err) {
     console.error(err.message);
-    return sendErrorResponse(
-      res,
-      'An error occurred. Please try again later.',
-      HTTP_STATUS.UNAUTHORIZED,
-    );
+    return sendErrorResponse(res, 'Token is missing or invalid.', HTTP_STATUS.UNAUTHORIZED);
   }
 };
 

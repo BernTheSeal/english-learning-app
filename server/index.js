@@ -4,6 +4,7 @@ const database = require('./config/db.js');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes.js');
 const userRoutes = require('./routes/userRoutes.js');
+const wordsRoutes = require('./routes/wordsRoutes.js');
 const cors = require('cors');
 
 const app = express();
@@ -20,6 +21,7 @@ app.use(
 
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
+app.use('/api', wordsRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`server is running on ${process.env.PORT} `);
