@@ -1,24 +1,24 @@
-import { booleanSchema } from "../schema/boolean.schema.js";
-import { idSchema } from "../schema/id.schema.js";
-import { stringSchema } from "../schema/string.schema.js";
+import { booleanSchema } from "../../validators/schema/boolean.schema.js";
+import { idSchema } from "../../validators/schema/id.schema.js";
+import { stringSchema } from "../../validators/schema/string.schema.js";
 
-export const getPermissionsValidator = [
+const getPermissions = [
   booleanSchema("query", "isActive", { isOptional: true }),
   booleanSchema("query", "isDeleteable", { isOptional: true }),
 ];
 
-export const getPermissionByIdValidator = [idSchema("permissionId")];
+const getPermissionById = [idSchema("permissionId")];
 
-export const addPermissionValidator = [
+const addPermission = [
   stringSchema("body", "name", { minLength: 3, maxLength: 25, requiredChar: ":" }),
   stringSchema("body", "description", { minLength: 5, maxLength: 150 }),
   booleanSchema("body", "isDeleteable"),
   booleanSchema("body", "isActive"),
 ];
 
-export const deletePermissionValidator = [idSchema("permissionId")];
+const deletePermission = [idSchema("permissionId")];
 
-export const updatePermissionValidator = [
+const updatePermission = [
   stringSchema("body", "name", {
     minLength: 3,
     maxLength: 15,
@@ -33,3 +33,11 @@ export const updatePermissionValidator = [
   booleanSchema("body", "isDeleteable", { isOptional: true }),
   booleanSchema("body", "isActive", { isOptional: true }),
 ];
+
+export default {
+  getPermissions,
+  getPermissionById,
+  addPermission,
+  deletePermission,
+  updatePermission,
+};

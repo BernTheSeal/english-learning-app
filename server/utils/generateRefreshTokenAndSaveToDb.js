@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { RefreshToken } from "../models/refreshToken.model.js";
+import { RefreshToken } from "../features/auth/session/refreshToken.model.js";
 
 export const generateRefreshTokenAndSaveToDb = async (userId) => {
   const refreshToken = jwt.sign({ userId }, process.env.JWT_SECRET, {

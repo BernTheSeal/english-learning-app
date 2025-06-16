@@ -1,43 +1,38 @@
 import express from "express";
+
+import { authGuard } from "../../middlewares/authGuard.js";
+import { withValidation } from "../../validators/withValidation.js";
+import { whitelistFields } from "../../middlewares/whiteListFields.js";
+
 import {
   getPermissions,
   getPermissionById,
   addPermission,
   deletePermission,
   updatePermission,
-} from "../controllers/permission.controller.js";
+} from "./permission.controller.js";
 
-import {
-  getPermissionsValidator,
-  getPermissionByIdValidator,
-  addPermissionValidator,
-  deletePermissionValidator,
-  updatePermissionValidator,
-} from "../validators/handlers/permission.validation.js";
+import permissionValidation from "./permission.validation.js";
 
-import { authGuard } from "../middlewares/authGuard.js";
-import { withValidation } from "../validators/withValidation.js";
-import { whitelistFields } from "../middlewares/whiteListFields.js";
+const router = express.Router();
 
-const route = express.Router();
-
-route.get(
+router.get(
   "/",
   authGuard("permission:read"),
   whitelistFields({ isActive: "query", isDeleteable: "query" }),
-  withValidation(getPermissionsValidator),
+  withValidation(permissionValidation.getPermissions),
   getPermissions
 );
 
-route.get(
+router.get(
   "/:permissionId",
   authGuard("permission:read:id"),
   whitelistFields({ permissionId: "params" }),
-  withValidation(getPermissionByIdValidator),
+  withValidation(permissionValidation.getPermissionById),
   getPermissionById
 );
 
-route.post(
+router.post(
   "/",
   authGuard("permission:create"),
   whitelistFields({
@@ -46,19 +41,19 @@ route.post(
     isDeleteable: "body",
     isActive: "body",
   }),
-  withValidation(addPermissionValidator),
+  withValidation(permissionValidation.addPermission),
   addPermission
 );
 
-route.delete(
+router.delete(
   "/:permissionId",
   authGuard("permission:delete:id"),
   whitelistFields({ permissionId: "params" }),
-  withValidation(deletePermissionValidator),
+  withValidation(permissionValidation.deletePermission),
   deletePermission
 );
 
-route.patch(
+router.patch(
   "/:permissionId",
   authGuard("permission:update:id"),
   whitelistFields({
@@ -68,8 +63,8 @@ route.patch(
     isDeleteable: "body",
     isActive: "body",
   }),
-  withValidation(updatePermissionValidator),
+  withValidation(permissionValidation.updatePermission),
   updatePermission
 );
 
-export default route;
+export default router;

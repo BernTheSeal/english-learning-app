@@ -1,6 +1,6 @@
-import { UserRole } from "../models/userRole.model.js";
-import { RolePermission } from "../models/rolePermission.model.js";
-import { Permission } from "../models/permission.model.js";
+import { UserRole } from "../features/userRole/userRole.model.js";
+import { RolePermission } from "../features/rolePermission/rolePermission.model.js";
+import { Permission } from "../features/permission/permission.model.js";
 import { PermissionError } from "../errors/permissionError.js";
 import { sendErrorResponse } from "../utils/responseHelper.js";
 import HTTP_STATUS from "../config/httpStatus.js";

@@ -1,4 +1,4 @@
-import { UserRole } from "../models/userRole.model.js";
+import { UserRole } from "../features/userRole/userRole.model.js";
 
 export const checkFullAccess = (...rolesAllowed) => {
   return async (req, res, next) => {
