@@ -1,10 +1,10 @@
 import HTTP_STATUS from "../../config/httpStatus.js";
 
-import { Role } from "./role.model.js";
-import { UserRole } from "../userRole/userRole.model.js";
-import { RolePermission } from "../rolePermission/rolePermission.model.js";
+import roleRepository from "./role.repository.js";
+import rolePermissionRepository from "../rolePermission/rolePermission.repository.js";
+import userRoleRepository from "../userRole/userRole.repository.js";
 
-import { RoleError } from "../../errors/roleError.js";
+import { RoleError } from "./role.error.js";
 
 const getRoles = async ({ isActive, isDeleteable }) => {
   const filter = {};
@@ -15,37 +15,33 @@ const getRoles = async ({ isActive, isDeleteable }) => {
     filter.isDeleteable = isDeleteable === "true";
   }
 
-  return await Role.find(filter);
+  return await roleRepository.listByFilter(filter);
 };
 
 const getRoleById = async ({ roleId }) => {
-  const role = await Role.findById(roleId).select("-__v");
+  const role = await roleRepository.getById(roleId);
   if (!role) {
     throw new RoleError("Role not found with the provided ID.", HTTP_STATUS.NOT_FOUND);
   }
 
-  const rolePermissions = await RolePermission.find({ roleId }).populate(
-    "permissionId",
-    "name description"
-  );
+  const permissions = await rolePermissionRepository.getPermissionsByRoleId(role._id);
 
-  const permissions = rolePermissions.map((entry) => ({
-    name: entry.permissionId.name,
-    description: entry.permissionId.description,
-  }));
-
-  const userRoles = await UserRole.find({ roleId }).populate("userId", "username _id");
-
-  const users = userRoles.map((entry) => ({
-    name: entry.userId.username,
-    _id: entry.userId._id,
-  }));
+  const users = await userRoleRepository.getUsersByRoleId(role._id);
 
   return { role, permissions, users };
 };
 
-const addRole = async ({ name, description, isActive, isDeleteable, user }) => {
-  const role = await Role.findOne({ name });
+const getRoleByName = async (roleName) => {
+  const role = await roleRepository.getByName(roleName);
+  if (!role) {
+    throw new RoleError("Role not found with the provided name.", HTTP_STATUS.NOT_FOUND);
+  }
+
+  return role;
+};
+
+const createRole = async ({ name, description, isActive, isDeleteable, user }) => {
+  const role = await roleRepository.getByName(name);
   if (role) {
     throw new RoleError(
       `The '${role.name.toUpperCase()}' role already exists.`,
@@ -53,18 +49,19 @@ const addRole = async ({ name, description, isActive, isDeleteable, user }) => {
     );
   }
 
-  const newRole = await Role.create({
+  const newRole = await roleRepository.create({
     name,
     description,
-    isDeleteable,
     isActive,
+    isDeleteable,
     createdBy: user._id,
   });
+
   return { newRole };
 };
 
 const deleteRole = async ({ roleId }) => {
-  const role = await Role.findById(roleId);
+  const role = await roleRepository.getById(roleId);
   if (!role) {
     throw new RoleError("Role not found with the provided ID.", HTTP_STATUS.NOT_FOUND);
   }
@@ -76,18 +73,19 @@ const deleteRole = async ({ roleId }) => {
     );
   }
 
-  const affectedUsers = await UserRole.find({ roleId });
+  const affectedUsers = await userRoleRepository.getUsersByRoleId(roleId);
 
-  for (const userRole of affectedUsers) {
-    const userRoles = await UserRole.find({ userId: userRole.userId });
-    if (userRoles.length === 1) {
-      const defaultRole = await Role.findOne({ name: "user" }).select("_id");
-      await UserRole.create({ userId: userRole.userId, roleId: defaultRole._id });
+  for (const user of affectedUsers) {
+    const roles = await userRoleRepository.getRolesByUserId(user._id);
+    if (roles.length === 1) {
+      const defaultRole = await roleRepository.getByName("user");
+      await userRoleRepository.create(user._id, defaultRole._id);
     }
   }
 
-  await UserRole.deleteMany({ roleId });
-  return await Role.findByIdAndDelete(roleId);
+  await rolePermissionRepository.deletePermissionsByRoleId(roleId);
+  await userRoleRepository.deleteUsersByRoleId(roleId);
+  return await roleRepository.deleteById(roleId);
 };
 
 const updateRole = async ({ roleId, updates }) => {
@@ -95,12 +93,12 @@ const updateRole = async ({ roleId, updates }) => {
     throw new RoleError("No update data provided.", HTTP_STATUS.BAD_REQUEST);
   }
 
-  const role = await Role.findById(roleId);
+  const role = await roleRepository.getById(roleId);
   if (!role) {
     throw new RoleError("Role not found with the provided ID.", HTTP_STATUS.NOT_FOUND);
   }
 
-  const existingRole = await Role.findOne({ name: updates?.name });
+  const existingRole = await roleRepository.getByName(updates?.name);
   if (existingRole) {
     throw new RoleError(
       `The role '${existingRole.name.toUpperCase()}' is already in use.`,
@@ -108,10 +106,14 @@ const updateRole = async ({ roleId, updates }) => {
     );
   }
 
-  return await Role.findByIdAndUpdate(roleId, updates, {
-    new: true,
-    runValidators: true,
-  });
+  return await roleRepository.updateById(roleId, updates);
 };
 
-export default { getRoles, getRoleById, addRole, deleteRole, updateRole };
+export default {
+  getRoles,
+  getRoleById,
+  getRoleByName,
+  createRole,
+  deleteRole,
+  updateRole,
+};

@@ -6,7 +6,7 @@ import { whitelistFields } from "../../middlewares/whiteListFields.js";
 
 import {
   getRoles,
-  addRole,
+  createRole,
   deleteRole,
   updateRole,
   getRoleById,
@@ -20,7 +20,7 @@ router.get(
   "/",
   authGuard("role:read"),
   whitelistFields({ isActive: "query", isDeleteable: "query" }),
-  withValidation(roleValidation.getRole),
+  withValidation(roleValidation.get),
   getRoles
 );
 
@@ -28,7 +28,7 @@ router.get(
   "/:roleId",
   authGuard("role:read:id"),
   whitelistFields({ roleId: "params" }),
-  withValidation(roleValidation.getRoleById),
+  withValidation(roleValidation.getById),
   getRoleById
 );
 
@@ -41,8 +41,8 @@ router.post(
     isActive: "body",
     isDeleteable: "body",
   }),
-  withValidation(roleValidation.addRole),
-  addRole
+  withValidation(roleValidation.create),
+  createRole
 );
 
 router.delete(
@@ -51,7 +51,7 @@ router.delete(
   whitelistFields({
     roleId: "params",
   }),
-  withValidation(roleValidation.deleteRole),
+  withValidation(roleValidation.deleteById),
   deleteRole
 );
 
@@ -65,7 +65,7 @@ router.patch(
     isActive: "body",
     isDeleteable: "body",
   }),
-  withValidation(roleValidation.updateRole),
+  withValidation(roleValidation.updateById),
   updateRole
 );
 

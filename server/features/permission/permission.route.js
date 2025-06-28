@@ -7,7 +7,7 @@ import { whitelistFields } from "../../middlewares/whiteListFields.js";
 import {
   getPermissions,
   getPermissionById,
-  addPermission,
+  createPermission,
   deletePermission,
   updatePermission,
 } from "./permission.controller.js";
@@ -20,7 +20,7 @@ router.get(
   "/",
   authGuard("permission:read"),
   whitelistFields({ isActive: "query", isDeleteable: "query" }),
-  withValidation(permissionValidation.getPermissions),
+  withValidation(permissionValidation.get),
   getPermissions
 );
 
@@ -28,7 +28,7 @@ router.get(
   "/:permissionId",
   authGuard("permission:read:id"),
   whitelistFields({ permissionId: "params" }),
-  withValidation(permissionValidation.getPermissionById),
+  withValidation(permissionValidation.getById),
   getPermissionById
 );
 
@@ -41,15 +41,15 @@ router.post(
     isDeleteable: "body",
     isActive: "body",
   }),
-  withValidation(permissionValidation.addPermission),
-  addPermission
+  withValidation(permissionValidation.create),
+  createPermission
 );
 
 router.delete(
   "/:permissionId",
   authGuard("permission:delete:id"),
   whitelistFields({ permissionId: "params" }),
-  withValidation(permissionValidation.deletePermission),
+  withValidation(permissionValidation.deleteById),
   deletePermission
 );
 
@@ -63,7 +63,7 @@ router.patch(
     isDeleteable: "body",
     isActive: "body",
   }),
-  withValidation(permissionValidation.updatePermission),
+  withValidation(permissionValidation.updateById),
   updatePermission
 );
 

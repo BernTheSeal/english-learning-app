@@ -2,23 +2,24 @@ import { booleanSchema } from "../../validators/schema/boolean.schema.js";
 import { idSchema } from "../../validators/schema/id.schema.js";
 import { stringSchema } from "../../validators/schema/string.schema.js";
 
-const getPermissions = [
+const get = [
   booleanSchema("query", "isActive", { isOptional: true }),
   booleanSchema("query", "isDeleteable", { isOptional: true }),
 ];
 
-const getPermissionById = [idSchema("permissionId")];
+const getById = [idSchema("permissionId")];
 
-const addPermission = [
+const create = [
   stringSchema("body", "name", { minLength: 3, maxLength: 25, requiredChar: ":" }),
   stringSchema("body", "description", { minLength: 5, maxLength: 150 }),
   booleanSchema("body", "isDeleteable"),
   booleanSchema("body", "isActive"),
 ];
 
-const deletePermission = [idSchema("permissionId")];
+const deleteById = [idSchema("permissionId")];
 
-const updatePermission = [
+const updateById = [
+  idSchema("permissionId"),
   stringSchema("body", "name", {
     minLength: 3,
     maxLength: 15,
@@ -35,9 +36,9 @@ const updatePermission = [
 ];
 
 export default {
-  getPermissions,
-  getPermissionById,
-  addPermission,
-  deletePermission,
-  updatePermission,
+  get,
+  getById,
+  create,
+  deleteById,
+  updateById,
 };

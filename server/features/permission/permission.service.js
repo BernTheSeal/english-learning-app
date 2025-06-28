@@ -1,12 +1,11 @@
 import HTTP_STATUS from "../../config/httpStatus.js";
 
-import { sendSuccessResponse } from "../../utils/responseHelper.js";
-import { PermissionError } from "../../errors/permissionError.js";
+import { PermissionError } from "./permission.error.js";
 
-import { Permission } from "./permission.model.js";
-import { RolePermission } from "../rolePermission/rolePermission.model.js";
+import permissionRepository from "./permission.repository.js";
+import rolePermissionRepository from "../rolePermission/rolePermission.repository.js";
 
-const getPermission = async ({ isActive, isDeleteable }) => {
+const getPermissions = async ({ isActive, isDeleteable }) => {
   const filter = {};
   if (isActive) {
     filter.isActive = isActive === "true";
@@ -15,11 +14,11 @@ const getPermission = async ({ isActive, isDeleteable }) => {
     filter.isDeleteable = isDeleteable === "true";
   }
 
-  return await Permission.find(filter);
+  return await permissionRepository.listByFilter(filter);
 };
 
 const getPermissionById = async ({ permissionId }) => {
-  const permission = await Permission.findById(permissionId);
+  const permission = await permissionRepository.getById(permissionId);
   if (!permission) {
     throw new PermissionError(
       "Permission not found with the provided ID.",
@@ -27,21 +26,13 @@ const getPermissionById = async ({ permissionId }) => {
     );
   }
 
-  const rolePermissions = await RolePermission.find({ permissionId }).populate(
-    "roleId",
-    "name description"
-  );
-
-  const roles = rolePermissions.map((entry) => ({
-    name: entry.roleId.name,
-    description: entry.roleId.description,
-  }));
+  const roles = await rolePermissionRepository.getRolesByPermissionId(permissionId);
 
   return { permission, roles };
 };
 
-const addPermission = async ({ name, description, isDeleteable, isActive, user }) => {
-  const permission = await Permission.findOne({ name });
+const createPermission = async ({ name, description, isDeleteable, isActive, user }) => {
+  const permission = await permissionRepository.getByName(name);
   if (permission) {
     throw new PermissionError(
       `The ${permission.name.toUpperCase()} permission already exists.`,
@@ -49,7 +40,7 @@ const addPermission = async ({ name, description, isDeleteable, isActive, user }
     );
   }
 
-  return await Permission.create({
+  return await permissionRepository.create({
     name,
     description,
     isDeleteable,
@@ -59,7 +50,7 @@ const addPermission = async ({ name, description, isDeleteable, isActive, user }
 };
 
 const deletePermission = async ({ permissionId }) => {
-  const permission = await Permission.findById(permissionId);
+  const permission = await permissionRepository.getById(permissionId);
   if (!permission) {
     throw new PermissionError(
       "Permission not found with the provided ID.",
@@ -74,39 +65,26 @@ const deletePermission = async ({ permissionId }) => {
     );
   }
 
-  await RolePermission.deleteMany({ permissionId });
-  return await Permission.findOneAndDelete({ _id: permissionId });
+  await rolePermissionRepository.deleteRolesByPermissionId(permissionId);
+  return await permissionRepository.deleteById(permissionId);
 };
 
 const updatePermission = async ({ permissionId, updates }) => {
-  const permission = await Permission.findById(permissionId);
+  const permission = await permissionRepository.getById(permissionId);
+
   if (!permission) {
     throw new PermissionError(
       "Permission not found with the provided ID.",
       HTTP_STATUS.NOT_FOUND
     );
   }
-
-  const modelFields = Object.keys(Permission.schema.paths);
-  const updateFields = Object.keys(updates);
-  const isValidUpdate = updateFields.every((field) => modelFields.includes(field));
-  if (!isValidUpdate) {
-    throw new PermissionError(
-      "invalid update fields. Check the updates fields",
-      HTTP_STATUS.BAD_REQUEST
-    );
-  }
-
-  return await Permission.findByIdAndUpdate(permissionId, updates, {
-    new: true,
-    runValidators: true,
-  });
+  return await permissionRepository.updateById(permissionId, updates);
 };
 
 export default {
-  getPermission,
+  getPermissions,
   getPermissionById,
-  addPermission,
+  createPermission,
   deletePermission,
   updatePermission,
 };

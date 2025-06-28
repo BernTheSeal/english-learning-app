@@ -1,78 +1,76 @@
 import HTTP_STATUS from "../../config/httpStatus.js";
 
-import { UserError } from "../../errors/userError.js";
+import UserRoleError from "./userRole.error.js";
 
-import { User } from "../user/user.model.js";
-import { UserRole } from "./userRole.model.js";
-import { Role } from "../role/role.model.js";
+import userRepository from "../user/user.repository.js";
+import userRoleRepository from "./userRole.repository.js";
+import roleRepository from "../role/role.repository.js";
 
 const addRoleToUser = async ({ userId, roleId }) => {
-  const user = await User.findById(userId);
+  const user = await userRepository.getById(userId);
   if (!user) {
-    throw new UserError("User not found.", HTTP_STATUS.NOT_FOUND);
+    throw new UserRoleError("User not found.", HTTP_STATUS.NOT_FOUND);
   }
 
-  const role = await Role.findById(roleId);
+  const role = await roleRepository.getById(roleId);
   if (!role) {
-    throw new UserError("Role not found.", HTTP_STATUS.NOT_FOUND);
+    throw new UserRoleError("Role not found.", HTTP_STATUS.NOT_FOUND);
   }
 
   if (!role.isActive) {
-    throw new UserError(
+    throw new UserRoleError(
       `The '${role.name.toUpperCase()}' role is not active.`,
       HTTP_STATUS.BAD_REQUEST
     );
   }
 
-  const isRoleAssigned = await UserRole.exists({ userId, roleId: role._id });
+  const isRoleAssigned = await userRoleRepository.getByIds(userId, roleId);
 
   if (isRoleAssigned) {
-    throw new UserError(
+    throw new UserRoleError(
       `'${user.username.toUpperCase()}' already has this '${role.name.toUpperCase()}' role.`
     );
   }
 
-  await UserRole.create({
-    userId,
-    roleId: role._id,
-  });
+  await userRoleRepository.create(userId, roleId);
 
   return { user, role };
 };
 
 const removeRoleFromUser = async ({ userId, roleId }) => {
-  const user = await User.findById(userId);
+  const user = await userRepository.getById(userId);
   if (!user) {
-    throw new UserError("User not found.", HTTP_STATUS.NOT_FOUND);
+    throw new UserRoleError("User not found.", HTTP_STATUS.NOT_FOUND);
   }
 
-  const role = await Role.findById(roleId);
+  const role = await roleRepository.getById(roleId);
   if (!role) {
-    throw new UserError("Role not found.", HTTP_STATUS.NOT_FOUND);
+    throw new UserRoleError("Role not found.", HTTP_STATUS.NOT_FOUND);
   }
 
-  const userHasRole = await UserRole.findOne({ userId, roleId });
+  const userHasRole = await userRoleRepository.getByIds(userId, roleId);
   if (!userHasRole) {
-    throw new UserError(
+    throw new UserRoleError(
       `Cannot remove '${role.name.toUpperCase()}' role from '${user.username.toUpperCase()}' because they do not have it.`,
       HTTP_STATUS.BAD_REQUEST
     );
   }
 
-  const userRoles = await UserRole.find({ userId });
+  const userRoles = await userRoleRepository.getRolesByUserId(userId);
   if (userRoles.length === 1) {
-    const defaultRole = await Role.findOne({ name: "user" }).select("_id");
-    if (String(userRoles[0].roleId) === String(defaultRole._id)) {
-      throw new UserError(
+    const defaultRole = await roleRepository.getByName("user");
+
+    if (String(userRoles[0]._id) === String(defaultRole._id)) {
+      throw new UserRoleError(
         "'USER' role cannot be removed as it is the only role",
         HTTP_STATUS.BAD_REQUEST
       );
     }
 
-    await UserRole.create({ userId, roleId: defaultRole._id });
+    await userRoleRepository.create(userId, defaultRole._id);
   }
 
-  await UserRole.deleteOne({ userId, roleId });
+  await userRoleRepository.deleteByIds(userId, roleId);
 
   return { role, user };
 };

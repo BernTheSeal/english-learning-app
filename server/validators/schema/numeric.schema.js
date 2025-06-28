@@ -14,8 +14,8 @@ export const numericSchema = (
     .notEmpty()
     .withMessage(`${field} is required!`)
     .bail()
-    .isLength({ min: options.min, max: options.max })
-    .withMessage(`${field} must be ${options.min} digits!`)
+    .isLength({ min: options.minLength, max: options.maxLength })
+    .withMessage(`${field} must be ${options.minLength} digits!`)
     .bail()
     .isNumeric()
     .withMessage(`${field} must contain only numbers!`);

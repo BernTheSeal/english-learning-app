@@ -1,56 +1,55 @@
 import HTTP_STATUS from "../../config/httpStatus.js";
 
-import { RoleError } from "../../errors/roleError.js";
+import RolePermissionError from "./rolePermission.error.js";
 
-import { Role } from "../role/role.model.js";
-import { RolePermission } from "./rolePermission.model.js";
-import { Permission } from "../permission/permission.model.js";
+import roleRepository from "../role/role.repository.js";
+import permissionRepository from "../permission/permission.repository.js";
+import rolePermissionRepository from "./rolePermission.repository.js";
 
 const addPermissionToRole = async ({ roleId, permissionId }) => {
-  const role = await Role.findById(roleId);
+  const role = await roleRepository.getById(roleId);
   if (!role) {
-    throw new RoleError("Role not found.", HTTP_STATUS.NOT_FOUND);
-  }
-  const permission = await Permission.findById(permissionId);
-  if (!permission) {
-    throw new RoleError("Permission not found.", HTTP_STATUS.NOT_FOUND);
+    throw new RolePermissionError("Role not found.", HTTP_STATUS.NOT_FOUND);
   }
 
-  const existingPermission = await RolePermission.exists({ roleId, permissionId });
-  if (existingPermission) {
-    throw new RoleError(
+  const permission = await permissionRepository.getById(permissionId);
+  if (!permission) {
+    throw new RolePermissionError("Permission not found.", HTTP_STATUS.NOT_FOUND);
+  }
+
+  const isExists = await rolePermissionRepository.existsByIds(roleId, permissionId);
+  if (isExists) {
+    throw new RolePermissionError(
       `'${role.name.toUpperCase()}' already has the '${permission.name.toUpperCase()}' permission.`,
       HTTP_STATUS.CONFLICT
     );
   }
 
-  await RolePermission.create({
-    roleId,
-    permissionId,
-  });
+  await rolePermissionRepository.create(roleId, permissionId);
 
   return { permission, role };
 };
 
 const removePermissionFromRole = async ({ roleId, permissionId }) => {
-  const role = await Role.findById(roleId);
+  const role = await roleRepository.getById(roleId);
   if (!role) {
-    throw new RoleError("Role not found.", HTTP_STATUS.NOT_FOUND);
-  }
-  const permission = await Permission.findById(permissionId);
-  if (!permission) {
-    throw new RoleError("Permission not found.", HTTP_STATUS.NOT_FOUND);
+    throw new RolePermissionError("Role not found.", HTTP_STATUS.NOT_FOUND);
   }
 
-  const hasPermission = await RolePermission.findOne({ roleId, permissionId });
-  if (!hasPermission) {
-    throw new RoleError(
+  const permission = await permissionRepository.getById(permissionId);
+  if (!permission) {
+    throw new RolePermissionError("Permission not found.", HTTP_STATUS.NOT_FOUND);
+  }
+
+  const isExists = await rolePermissionRepository.existsByIds(roleId, permissionId);
+  if (!isExists) {
+    throw new RolePermissionError(
       `'${role.name.toUpperCase()}' does not have the '${permission.name.toUpperCase()}' permission.`,
       HTTP_STATUS.BAD_REQUEST
     );
   }
 
-  await RolePermission.deleteOne({ roleId, permissionId });
+  await rolePermissionRepository.deleteByIds(roleId, permissionId);
 
   return { permission, role };
 };

@@ -2,7 +2,7 @@ import HTTP_STATUS from "../../config/httpStatus.js";
 import { sendSuccessResponse } from "../../utils/responseHelper.js";
 import roleService from "./role.service.js";
 
-export const getRoles = async (req, res) => {
+export const getRoles = async (req, res, next) => {
   const { isActive, isDeleteable } = req.query;
 
   try {
@@ -33,11 +33,11 @@ export const getRoleById = async (req, res, next) => {
   }
 };
 
-export const addRole = async (req, res, next) => {
+export const createRole = async (req, res, next) => {
   const { name, description, isActive, isDeleteable } = req.body;
   const user = req.user;
   try {
-    const role = await roleService.addRole({
+    const role = await roleService.createRole({
       name,
       description,
       isActive,

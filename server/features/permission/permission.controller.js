@@ -6,7 +6,7 @@ export const getPermissions = async (req, res, next) => {
   const { isActive, isDeleteable } = req.query;
 
   try {
-    const permission = await permissionService.getPermission({ isActive, isDeleteable });
+    const permission = await permissionService.getPermissions({ isActive, isDeleteable });
 
     return sendSuccessResponse(
       res,
@@ -42,12 +42,12 @@ export const getPermissionById = async (req, res, next) => {
   }
 };
 
-export const addPermission = async (req, res, next) => {
+export const createPermission = async (req, res, next) => {
   const { name, description, isDeleteable, isActive } = req.body;
   const user = req.user;
 
   try {
-    const permission = await permissionService.addPermission({
+    const permission = await permissionService.createPermission({
       name,
       description,
       isDeleteable,

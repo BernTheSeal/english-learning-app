@@ -4,6 +4,7 @@ import { sendErrorResponse } from "../utils/responseHelper.js";
 
 const globalErrorHandler = (err, req, res, next) => {
   if (err instanceof BaseError) {
+    console.error(err);
     return sendErrorResponse(res, err.message, err.statusCode, err.type, err.errors);
   }
 

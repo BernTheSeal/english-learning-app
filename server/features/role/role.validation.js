@@ -2,23 +2,23 @@ import { booleanSchema } from "../../validators/schema/boolean.schema.js";
 import { idSchema } from "../../validators/schema/id.schema.js";
 import { stringSchema } from "../../validators/schema/string.schema.js";
 
-const getRole = [
+const get = [
   booleanSchema("query", "isActive", { isOptional: true }),
   booleanSchema("query", "isDeleteable", { isOptional: true }),
 ];
 
-const getRoleById = [idSchema("roleId")];
+const getById = [idSchema("roleId")];
 
-const addRole = [
+const create = [
   stringSchema("body", "name", { minLength: 3, maxLength: 15 }),
   stringSchema("body", "description", { minLength: 5, maxLength: 150 }),
   booleanSchema("body", "isDeleteable"),
   booleanSchema("body", "isActive"),
 ];
 
-const deleteRole = [idSchema("roleId")];
+const deleteById = [idSchema("roleId")];
 
-const updateRole = [
+const updateById = [
   idSchema("roleId"),
   stringSchema("body", "name", { minLength: 3, maxLength: 15, isOptional: true }),
   stringSchema("body", "description", {
@@ -30,4 +30,4 @@ const updateRole = [
   booleanSchema("body", "isActive", { isOptional: true }),
 ];
 
-export default { getRole, getRoleById, addRole, deleteRole, updateRole };
+export default { get, getById, create, deleteById, updateById };

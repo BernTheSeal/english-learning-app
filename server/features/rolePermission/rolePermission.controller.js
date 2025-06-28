@@ -23,7 +23,7 @@ export const addPermissionToRole = async (req, res, next) => {
 export const removePermissionFromRole = async (req, res, next) => {
   const { roleId, permissionId } = req.params;
   try {
-    const { permission, role } = rolePermissionService.removePermissionFromRole({
+    const { permission, role } = await rolePermissionService.removePermissionFromRole({
       roleId,
       permissionId,
     });
