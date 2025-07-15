@@ -24,6 +24,7 @@ export const createSession: CreateSessionHandler = async (req, res, next) => {
 
     const accessToken = await sessionService.createSession(userId.toString());
 
+    //!
     saveAccessTokenInCookie(res, accessToken);
 
     sendSuccessResponse(res, "Successfully logged in.", HTTP_SUCCESS_STATUS.OK);
@@ -39,6 +40,7 @@ export const deleteSession: Handler = async (req, res, next) => {
   try {
     await sessionService.deleteSession(userId);
 
+    //!
     clearAccessTokenFromCookie(res);
 
     sendSuccessResponse(res, "Successfully logged out.", HTTP_SUCCESS_STATUS.OK);

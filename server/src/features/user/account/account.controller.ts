@@ -27,17 +27,17 @@ export const register: RegisterHandler = async (req, res, next) => {
 
 export const deleteUser: DeleteUserHandler = async (req, res, next) => {
   const { userId } = req.validatedParams;
-  const userIdToken = req.userId!;
-  const fullAccess = req.fullAccess!;
+  const userIdFromToken = req.userId!;
 
   try {
-    await accountService.deleteUser({ userId, userIdToken, fullAccess });
+    await accountService.deleteUser({ userId, userIdFromToken });
 
-    await sessionService.deleteSession(userIdToken);
+    await sessionService.deleteSession(userIdFromToken);
 
-    if (!fullAccess) {
-      clearAccessTokenFromCookie(res);
-    }
+    //!clear accessToken from localstore!
+    // if (!fullAccess) {
+    //   clearAccessTokenFromCookie(res);
+    // }
 
     return sendSuccessResponse(res, "user successfullly has been deleted.", HTTP_SUCCESS_STATUS.OK);
   } catch (error) {

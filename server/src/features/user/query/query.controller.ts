@@ -30,14 +30,12 @@ export const getUsers: GetUsersHandler = async (req, res, next) => {
 
 export const getUserById: GetUserByIdHandler = async (req, res, next) => {
   const { userId } = req.validatedParams;
-  const fullAccess = req.fullAccess!;
-
+  const userIdFromToken = req.userId!;
   try {
-    const { user, roles } = await queryService.getUserById({ fullAccess, userId });
+    const data = await queryService.getUserById(userId, userIdFromToken);
 
     return sendSuccessResponse(res, "User fetched successfully by ID.", HTTP_SUCCESS_STATUS.OK, {
-      user,
-      roles: fullAccess ? roles : undefined,
+      ...data,
     });
   } catch (error) {
     next(error);

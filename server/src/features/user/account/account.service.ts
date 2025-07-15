@@ -1,7 +1,7 @@
 import { HTTP_ERROR_STATUS } from "../../../config/httpStatus";
 
 import UserError from "../user.error";
-
+import userPolicy from "../../../policies/user.policy";
 import userRepository from "../user.repository";
 import userRoleRepository from "../../userRole/userRole.repository";
 
@@ -19,21 +19,24 @@ const createUser = async ({ email, password, username }: createUserInput) => {
   return user;
 };
 
-const deleteUser = async ({ userIdToken, userId, fullAccess }: deleteUserInput) => {
-  if (!fullAccess) {
-    if (userId !== userIdToken) {
-      throw new UserError("You do not have permission to delete the user.", HTTP_ERROR_STATUS.FORBIDDEN);
-    }
+const deleteUser = async ({ userIdFromToken, userId }: deleteUserInput) => {
+  const userRoles = (await userRoleRepository.getRolesByUserId(userIdFromToken)) as RoleDocument[];
+
+  const canDelete = userPolicy.canDeleteUser({
+    requesterId: userIdFromToken,
+    targetId: userId,
+    roles: userRoles,
+  });
+
+  if (!canDelete.allowed) {
+    throw new UserError(
+      canDelete.reason ?? "You do not have the necessary permissions to delete the user.",
+      HTTP_ERROR_STATUS.CONFLICT
+    );
   }
 
-  const userRoles = (await userRoleRepository.getRolesByUserId(userIdToken)) as RoleDocument[];
-  const isAdmin = userRoles.some((role) => role.name === "admin");
-  if (isAdmin) {
-    throw new UserError("Admin cannot be deleted.", HTTP_ERROR_STATUS.FORBIDDEN);
-  }
-
-  await userRoleRepository.deleteRolesByUserId(userIdToken);
-  await userRepository.deleteById(userIdToken);
+  await userRoleRepository.deleteRolesByUserId(userId);
+  await userRepository.deleteById(userId);
 };
 
 export default { createUser, deleteUser };

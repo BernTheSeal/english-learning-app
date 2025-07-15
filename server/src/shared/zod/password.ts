@@ -6,5 +6,4 @@ export const zodPassword = z
   .max(64, "Password must be at most 64 characters.")
   .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
   .regex(/[a-z]/, "Password must contain at least one lowercase letter.")
-  .regex(/[0-9]/, "Password must contain at least one number.")
-  .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character.");
+  .regex(/[0-9]/, "Password must contain at least one number.");

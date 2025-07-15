@@ -8,6 +8,7 @@ import userRepository from "../user.repository";
 import { getUsersInput } from "./query.input";
 import { RoleDocument } from "../../role/role.type";
 import { UserDocument } from "../user.type";
+import userPolicy from "../../../policies/user.policy";
 
 const getMe = async (userId: string) => {
   const me = await userRepository.getById(userId);
@@ -40,24 +41,25 @@ const getUsers = async ({ isVerified, role }: getUsersInput) => {
   return await userRepository.listByFilter(filter);
 };
 
-const getUserById = async ({ userId, fullAccess }: { userId: string; fullAccess: boolean }) => {
-  let user;
-  if (fullAccess) {
-    user = await userRepository.getById(userId);
+const getUserById = async (userId: string, userIdFromToken: string) => {
+  const userRoles = (await userRoleRepository.getRolesByUserId(userIdFromToken)) as RoleDocument[];
+
+  let targetUser;
+  let targetUserRoles;
+
+  const canViewFullInfo = userPolicy.canViewFullUserInfo(userRoles);
+
+  if (canViewFullInfo.allowed) {
+    targetUser = await userRepository.getById(userId);
+    targetUserRoles = await userRoleRepository.getRolesByUserId(userId);
   } else {
-    user = await userRepository.getProfileById(userId);
+    targetUser = await userRepository.getProfileById(userId);
   }
 
-  if (!user) {
-    throw new UserError("User not found with the provided ID.", HTTP_ERROR_STATUS.NOT_FOUND);
-  }
-
-  let roles: RoleDocument[] = [];
-  if (fullAccess) {
-    roles = (await userRoleRepository.getRolesByUserId(userId)) as RoleDocument[];
-  }
-
-  return { user, roles };
+  return {
+    user: targetUser,
+    userRoles: canViewFullInfo.allowed ? targetUserRoles : undefined,
+  };
 };
 
 export default { getMe, getUsers, getUserById };

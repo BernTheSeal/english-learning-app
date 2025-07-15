@@ -2,7 +2,6 @@ import express, { RequestHandler } from "express";
 
 import { validateRequest } from "../../../middlewares/validateRequest";
 import { authGuard } from "../../../middlewares/authGuard";
-import { checkFullAccess } from "../../../middlewares/checkFullAccess";
 import { registerLimiter } from "../../../middlewares/rateLimiter";
 
 import { register, deleteUser } from "./account.controller";
@@ -21,7 +20,6 @@ router.delete(
   "/:userId",
   authGuard("user:delete:id"),
   validateRequest({ params: deleteUserSchema }),
-  checkFullAccess("admin"),
   deleteUser as unknown as RequestHandler
 );
 

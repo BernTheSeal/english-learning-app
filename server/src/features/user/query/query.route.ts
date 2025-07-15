@@ -2,7 +2,6 @@ import express, { RequestHandler } from "express";
 
 import { validateRequest } from "../../../middlewares/validateRequest";
 import { authGuard } from "../../../middlewares/authGuard";
-import { checkFullAccess } from "../../../middlewares/checkFullAccess";
 
 import { getUsers, getUserById, getMe } from "./query.controller";
 
@@ -24,7 +23,6 @@ router.get(
   "/:userId",
   authGuard("user:read:id"),
   validateRequest({ params: getUserByIdSchema }),
-  checkFullAccess("admin"),
   getUserById as unknown as RequestHandler
 );
 
