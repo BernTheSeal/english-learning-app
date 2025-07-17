@@ -16,6 +16,7 @@ import permissionRoutes from "./features/permission/permission.route";
 import userRoleRoutes from "./features/userRole/userRole.route";
 import rolePermissionRoutes from "./features/rolePermission/rolePermission.route";
 import sessionRoutes from "./features/session/session.route";
+import dictionaryRoutes from "./features/dictionary/dictionary.route";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
@@ -45,6 +46,8 @@ app.use("/api/user", userRoutes);
 app.use("/api/user", userRoleRoutes);
 
 app.use("/api/session", sessionRoutes);
+
+app.use("/api/dictionary", dictionaryRoutes);
 
 app.use("/api/role", roleRoutes);
 app.use("/api/role", rolePermissionRoutes);

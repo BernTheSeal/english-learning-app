@@ -1,2 +1,2 @@
-export { saveAccessTokenInCookie } from "./saveAccessTokenInCookie";
-export { clearAccessTokenFromCookie } from "./clearAccessTokenFromCookie";
+export { saveSessionTokenInCookie } from "./saveSessionTokenInCookie";
+export { clearSessionTokenFromCookie } from "./clearSessionTokenFromCookie";

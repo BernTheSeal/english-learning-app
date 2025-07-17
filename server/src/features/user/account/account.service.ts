@@ -37,6 +37,8 @@ const deleteUser = async ({ userIdFromToken, userId }: deleteUserInput) => {
 
   await userRoleRepository.deleteRolesByUserId(userId);
   await userRepository.deleteById(userId);
+
+  return userIdFromToken === userId;
 };
 
 export default { createUser, deleteUser };

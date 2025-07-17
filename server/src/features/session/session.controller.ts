@@ -4,7 +4,7 @@ import sessionService from "./session.service";
 
 import { generateAccessToken } from "../../shared/token/index";
 
-import { clearAccessTokenFromCookie, saveAccessTokenInCookie } from "../../shared/cookie/index";
+import { saveSessionTokenInCookie, clearSessionTokenFromCookie } from "../../shared/cookie/index";
 
 import { CreateSessionHandler } from "./session.handler";
 import { Handler } from "express";
@@ -19,13 +19,12 @@ export const checkSession: Handler = async (req, res) => {
 export const createSession: CreateSessionHandler = async (req, res, next) => {
   const { email, password } = req.validatedBody;
   try {
-    const user = await sessionService.validateCredentials(email, password);
-    const userId = user._id;
+    const userId = await sessionService.validateCredentials(email, password);
 
-    const accessToken = await sessionService.createSession(userId.toString());
+    const { accessToken, refreshToken } = await sessionService.createSession(userId.toString());
 
-    //!
-    saveAccessTokenInCookie(res, accessToken);
+    saveSessionTokenInCookie(res, accessToken, "accessToken");
+    saveSessionTokenInCookie(res, refreshToken, "refreshToken");
 
     sendSuccessResponse(res, "Successfully logged in.", HTTP_SUCCESS_STATUS.OK);
     return;
@@ -40,8 +39,8 @@ export const deleteSession: Handler = async (req, res, next) => {
   try {
     await sessionService.deleteSession(userId);
 
-    //!
-    clearAccessTokenFromCookie(res);
+    clearSessionTokenFromCookie(res, "accessToken");
+    clearSessionTokenFromCookie(res, "refreshToken");
 
     sendSuccessResponse(res, "Successfully logged out.", HTTP_SUCCESS_STATUS.OK);
     return;
@@ -51,16 +50,15 @@ export const deleteSession: Handler = async (req, res, next) => {
 };
 
 export const generateNewAccessToken: Handler = async (req, res, next) => {
-  const accessToken = req.cookies.accessToken;
+  const refreshToken = req.cookies.refreshToken;
 
   try {
-    const userId = await sessionService.validateSession(accessToken);
+    const userId = await sessionService.validateSession(refreshToken);
 
     const newAccessToken = generateAccessToken(userId);
 
-    clearAccessTokenFromCookie(res);
-
-    saveAccessTokenInCookie(res, newAccessToken);
+    clearSessionTokenFromCookie(res, "accessToken");
+    saveSessionTokenInCookie(res, newAccessToken, "accessToken");
 
     sendSuccessResponse(res, "New access token created", HTTP_SUCCESS_STATUS.CREATED);
     return;

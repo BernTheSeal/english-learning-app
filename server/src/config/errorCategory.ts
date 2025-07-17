@@ -8,4 +8,6 @@ export const ERROR_CATEGORY = {
   VALIDATION: "validation_error",
   APPLICATION: "application_error",
   RATE: "rateLimit_error",
+  MAIL: "mail_error",
+  DICTIONARY: "dictionary_error",
 } as const;

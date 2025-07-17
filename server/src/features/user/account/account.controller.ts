@@ -6,7 +6,7 @@ import roleService from "../../role/role.service";
 import sessionService from "../../session/session.service";
 
 import { sendSuccessResponse } from "../../../shared/response/sendSuccessResponse";
-import { clearAccessTokenFromCookie } from "../../../shared/cookie/index";
+import { clearSessionTokenFromCookie } from "../../../shared/cookie/index";
 
 import { RegisterHandler, DeleteUserHandler } from "./account.handler";
 
@@ -30,14 +30,14 @@ export const deleteUser: DeleteUserHandler = async (req, res, next) => {
   const userIdFromToken = req.userId!;
 
   try {
-    await accountService.deleteUser({ userId, userIdFromToken });
+    const isOwnAccount = await accountService.deleteUser({ userId, userIdFromToken });
 
     await sessionService.deleteSession(userIdFromToken);
 
-    //!clear accessToken from localstore!
-    // if (!fullAccess) {
-    //   clearAccessTokenFromCookie(res);
-    // }
+    if (isOwnAccount) {
+      clearSessionTokenFromCookie(res, "accessToken");
+      clearSessionTokenFromCookie(res, "refreshToken");
+    }
 
     return sendSuccessResponse(res, "user successfullly has been deleted.", HTTP_SUCCESS_STATUS.OK);
   } catch (error) {

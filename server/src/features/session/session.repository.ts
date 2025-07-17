@@ -12,8 +12,13 @@ export const getByUserId = async (userId: string) => {
   return await Session.findOne({ userId });
 };
 
+export const getByToken = async (token: string) => {
+  return await Session.findOne({ refreshToken: token });
+};
+
 export default {
   create,
   deleteByUserId,
   getByUserId,
+  getByToken,
 };

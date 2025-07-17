@@ -2,40 +2,39 @@ import { HTTP_ERROR_STATUS } from "../../config/httpStatus";
 
 import SessionError from "./session.error";
 
-import { generateAccessToken, generateRefreshToken, decodeToken } from "../../shared/token/index";
+import { generateAccessToken, generateRefreshToken, verifyToken } from "../../shared/token/index";
 
 import { comparePassword } from "../../shared/crypto/index";
 
 import sessionRepository from "./session.repository";
 import userRepository from "../user/user.repository";
 
-const validateSession = async (accessToken: string) => {
-  if (!accessToken) {
-    throw new SessionError("Access token is missing.", HTTP_ERROR_STATUS.UNAUTHORIZED);
+const validateSession = async (refreshToken: string) => {
+  if (!refreshToken) {
+    throw new SessionError("refresh token is missing.", HTTP_ERROR_STATUS.UNAUTHORIZED);
   }
 
-  const decoded = decodeToken(accessToken);
+  let decoded;
+  try {
+    decoded = verifyToken(refreshToken);
+  } catch (error) {
+    throw new SessionError("Invalid refresh token.", HTTP_ERROR_STATUS.UNAUTHORIZED);
+  }
 
   if (!decoded) {
-    throw new SessionError("Invalid access token.", HTTP_ERROR_STATUS.UNAUTHORIZED);
+    throw new SessionError("Invalid refresh token.", HTTP_ERROR_STATUS.UNAUTHORIZED);
   }
 
-  const userId = decoded.userId;
-
-  if (!userId) {
-    throw new SessionError("Invalid access token.", HTTP_ERROR_STATUS.UNAUTHORIZED);
-  }
-
-  const session = await sessionRepository.getByUserId(userId);
+  const session = await sessionRepository.getByToken(refreshToken);
   if (!session) {
-    throw new SessionError("Refresh token is missing or expired.", HTTP_ERROR_STATUS.UNAUTHORIZED);
+    throw new SessionError("Refresh token is missing", HTTP_ERROR_STATUS.UNAUTHORIZED);
   }
 
   const isExpired = session.expiresAt < new Date();
 
   if (isExpired) {
-    await sessionRepository.deleteByUserId(userId);
-    throw new SessionError("Refresh token is missing or expired.", HTTP_ERROR_STATUS.UNAUTHORIZED);
+    await sessionRepository.getByToken(refreshToken);
+    throw new SessionError("Refresh token is expired.", HTTP_ERROR_STATUS.UNAUTHORIZED);
   }
 
   return decoded.userId;
@@ -61,7 +60,9 @@ const validateCredentials = async (email: string, password: string) => {
     );
   }
 
-  return user;
+  const userId = user._id;
+
+  return userId;
 };
 
 const createSession = async (userId: string) => {
@@ -71,7 +72,7 @@ const createSession = async (userId: string) => {
   await sessionRepository.deleteByUserId(userId);
   await sessionRepository.create(userId, refreshToken, expiresAt);
 
-  return accessToken;
+  return { accessToken, refreshToken };
 };
 
 const deleteSession = async (userId: string) => {

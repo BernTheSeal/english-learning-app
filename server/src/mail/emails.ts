@@ -1,5 +1,7 @@
 import { mailtrapClient, sender } from "./mailtrap.config";
 import { VERIFICATION_EMAIL_TEMPLATE, FORGOT_PASSWORD_EMAIL_TEMPLATE } from "./emailsTemplate";
+import { MailError } from "./Mail.error";
+import { HTTP_ERROR_STATUS } from "../config/httpStatus";
 
 export const sendVerificationEmail = async (email: string, verificationToken: string) => {
   const recipients = [{ email }];
@@ -12,8 +14,7 @@ export const sendVerificationEmail = async (email: string, verificationToken: st
       category: "Email verification",
     });
   } catch (error) {
-    console.error("Error sending verification", error);
-    throw new Error(`Error sending verification email: ${error}`);
+    throw new MailError("Error sending verification email", HTTP_ERROR_STATUS.BAD_REQUEST);
   }
 };
 
@@ -28,7 +29,6 @@ export const sendPasswordResetEmail = async (email: string, resetURL: string) =>
       category: "forgot password",
     });
   } catch (error) {
-    console.error("Error reseting passowrd", error);
-    throw new Error(`Error sending verification email: ${error}`);
+    throw new MailError("Error sending reset password link", HTTP_ERROR_STATUS.BAD_REQUEST);
   }
 };
