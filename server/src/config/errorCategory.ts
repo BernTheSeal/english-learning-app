@@ -10,4 +10,5 @@ export const ERROR_CATEGORY = {
   RATE: "rateLimit_error",
   MAIL: "mail_error",
   DICTIONARY: "dictionary_error",
+  WORD: "word_error",
 } as const;
