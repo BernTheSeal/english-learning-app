@@ -1,14 +1,11 @@
 import { z } from "zod";
-import { zodBoolean, zodMongoId } from "../../shared/zod";
+import { zodBoolean, zodMongoId, zodWord } from "../../shared/zod";
 
 export const createWordSchema = z
   .object({
-    name: z
-      .string()
-      .min(1, "Word must be at least 1 character long.")
-      .max(20, "Word must be at most 20 characters long.")
-      .regex(/^[a-zA-Z-]+$/, "Word must contain only letters and hyphens."),
+    name: zodWord,
     first3k: zodBoolean.optional(),
+    types: z.array(z.string()),
     level: z
       .enum(["a1", "a2", "b1", "b2", "c1", "c2"], {
         errorMap: () => ({ message: "Level must be one of: a1, a2, b1, b2, c1, or c2." }),

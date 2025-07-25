@@ -11,4 +11,5 @@ export const ERROR_CATEGORY = {
   MAIL: "mail_error",
   DICTIONARY: "dictionary_error",
   WORD: "word_error",
+  USER_WORD: "userWord_error",
 } as const;

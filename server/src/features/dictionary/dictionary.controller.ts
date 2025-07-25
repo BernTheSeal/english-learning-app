@@ -9,12 +9,14 @@ export const getWordFromDictionary: GetWordFromDictionaryHandler = async (req, r
   let wordFromDb;
 
   try {
-    const WordInfoFromDictionary = await dictionaryService.getWord(word);
+    const WordInfoFromDictionary = await dictionaryService.getWordOrThrow(word);
+
+    const wordType = wordService.getWordType(WordInfoFromDictionary);
 
     wordFromDb = await wordService.getWordByName(word);
 
     if (!wordFromDb) {
-      wordFromDb = await wordService.createWord({ name: word });
+      wordFromDb = await wordService.createWord({ name: word, types: wordType });
     }
 
     const frequency = await wordService.getWordFrequencyByWordId(wordFromDb._id.toString());

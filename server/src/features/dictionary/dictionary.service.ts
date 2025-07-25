@@ -1,7 +1,7 @@
 import dictionaryExternal from "./dictionary.external";
 import dictionaryAdapter from "./dictionary.adapter";
 
-const getWord = async (word: string) => {
+const getWordOrThrow = async (word: string) => {
   const rawWord = await dictionaryExternal.fetchWord(word);
 
   const wordInfo = dictionaryAdapter.normalizeWord(rawWord);
@@ -9,4 +9,4 @@ const getWord = async (word: string) => {
   return wordInfo;
 };
 
-export default { getWord };
+export default { getWordOrThrow };

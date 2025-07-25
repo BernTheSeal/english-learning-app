@@ -12,6 +12,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     return;
   }
 
+  console.log(err);
   sendErrorResponse(
     res,
     "An unexpected error occurred.",

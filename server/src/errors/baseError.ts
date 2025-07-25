@@ -1,7 +1,7 @@
 import { ErrorCategory } from "../types/ErrorCategory";
 import { ErrorStatusCode } from "../types/StatusCode";
 
-class BaseError<T> extends Error {
+class BaseError<T = null> extends Error {
   public statusCode: ErrorStatusCode;
   public errorCategory: ErrorCategory;
   public errors: T | null;

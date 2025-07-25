@@ -18,6 +18,7 @@ import rolePermissionRoutes from "./features/rolePermission/rolePermission.route
 import sessionRoutes from "./features/session/session.route";
 import dictionaryRoutes from "./features/dictionary/dictionary.route";
 import wordRoutes from "./features/word/word.route";
+import userWordRoutes from "./features/userWord/userWord.route";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
@@ -44,7 +45,8 @@ app.use(helmet());
 app.use(generalLimiter);
 
 app.use("/api/user", userRoutes);
-app.use("/api/user", userRoleRoutes);
+app.use("/api/user-role", userRoleRoutes);
+app.use("/api/user-word", userWordRoutes);
 
 app.use("/api/session", sessionRoutes);
 
@@ -53,7 +55,7 @@ app.use("/api/dictionary", dictionaryRoutes);
 app.use("/api/word", wordRoutes);
 
 app.use("/api/role", roleRoutes);
-app.use("/api/role", rolePermissionRoutes);
+app.use("/api/role-permission", rolePermissionRoutes);
 
 app.use("/api/permission", permissionRoutes);
 

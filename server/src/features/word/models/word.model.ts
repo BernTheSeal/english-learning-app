@@ -14,10 +14,15 @@ const WordSchema = new mongoose.Schema<WordDocument>(
       enum: ["a1", "a2", "b1", "b2", "c1", "c2"],
       default: null,
     },
+    types: {
+      type: [String],
+      default: [],
+      required: true,
+    },
 
     first3k: { type: Boolean, default: null },
   },
   { timestamps: true }
 );
 
-export const Word = mongoose.model<WordDocument>("Word", WordSchema);
+export const Word = mongoose.model<WordDocument>("word", WordSchema);
