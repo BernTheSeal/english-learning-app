@@ -1,7 +1,7 @@
 import { Types, Document } from "mongoose";
 import { IWord, WordDocument } from "../word/word.type";
 
-type wordStatus = "new" | "learning" | "familiar" | "mastered";
+export type wordStatus = "new" | "learning" | "familiar" | "mastered";
 
 interface IUserWord {
   userId: Types.ObjectId;

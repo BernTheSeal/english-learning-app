@@ -19,6 +19,7 @@ import sessionRoutes from "./features/session/session.route";
 import dictionaryRoutes from "./features/dictionary/dictionary.route";
 import wordRoutes from "./features/word/word.route";
 import userWordRoutes from "./features/userWord/userWord.route";
+import notificationRoutes from "./features/notification/notification.route";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
@@ -43,6 +44,8 @@ app.use(sanitizeRequest);
 app.use(helmet());
 
 app.use(generalLimiter);
+
+app.use("/api/notification", notificationRoutes);
 
 app.use("/api/user", userRoutes);
 app.use("/api/user-role", userRoleRoutes);

@@ -5,9 +5,9 @@ import queryService from "./query.service";
 import { GetUserByIdHandler, GetUsersHandler } from "./query.handler";
 
 export const getMe: Handler = async (req, res, next) => {
-  const userId = req.userId;
+  const userId = req.userId!;
   try {
-    const me = await queryService.getMe(String(userId));
+    const me = await queryService.getMe(userId);
     return sendSuccessResponse(res, "It is you!", HTTP_SUCCESS_STATUS.OK, {
       me,
     });

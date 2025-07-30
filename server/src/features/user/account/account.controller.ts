@@ -17,9 +17,16 @@ export const register: RegisterHandler = async (req, res, next) => {
 
     const user = await accountService.createUser({ email, password, username });
 
-    await userRoleService.addRoleToUser({ userId: user._id.toString(), roleId: role._id.toString() });
+    await userRoleService.addRoleToUser({
+      userId: user._id.toString(),
+      roleId: role._id.toString(),
+    });
 
-    return sendSuccessResponse(res, "User successfully created", HTTP_SUCCESS_STATUS.CREATED);
+    return sendSuccessResponse(
+      res,
+      "User successfully created",
+      HTTP_SUCCESS_STATUS.CREATED
+    );
   } catch (error) {
     next(error);
   }
@@ -39,7 +46,11 @@ export const deleteUser: DeleteUserHandler = async (req, res, next) => {
       clearSessionTokenFromCookie(res, "refreshToken");
     }
 
-    return sendSuccessResponse(res, "user successfullly has been deleted.", HTTP_SUCCESS_STATUS.OK);
+    return sendSuccessResponse(
+      res,
+      "user successfullly has been deleted.",
+      HTTP_SUCCESS_STATUS.OK
+    );
   } catch (error) {
     next(error);
   }

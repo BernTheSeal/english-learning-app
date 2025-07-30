@@ -1,6 +1,7 @@
 import wordService from "../word/word.service";
 import dictionaryService from "../dictionary/dictionary.service";
 import userWordService from "./userWordService";
+import notificationService from "../notification/notification.service";
 
 import { CreateUserWordHandler, TrackUserWordActivityHandler } from "./userWord.handler";
 import { sendSuccessResponse } from "../../shared/response";
@@ -33,28 +34,42 @@ export const createUserWord: CreateUserWordHandler = async (req, res, next) => {
       wordId = wordFromPool._id;
     } else {
       const WordInfoFromDictionary = await dictionaryService.getWordOrThrow(word);
-      const wordTypes = wordService.getWordType(WordInfoFromDictionary);
+      const wordTypes = wordService.getWordType(WordInfoFromDictionary.meanings);
       const createdWord = await wordService.createWord({ name: word, types: wordTypes });
       wordId = createdWord._id;
     }
 
     await userWordService.createUserWord({ userId, wordId, status, nextReviewAt });
 
-    sendSuccessResponse(res, "Word saved and added to your list.", HTTP_SUCCESS_STATUS.CREATED);
+    sendSuccessResponse(
+      res,
+      "Word saved and added to your list.",
+      HTTP_SUCCESS_STATUS.CREATED
+    );
     return;
   } catch (error) {
     next(error);
   }
 };
 
-export const trackUserWordActivity: TrackUserWordActivityHandler = async (req, res, next) => {
+export const trackUserWordActivity: TrackUserWordActivityHandler = async (
+  req,
+  res,
+  next
+) => {
   const { words } = req.validatedBody;
   const userId = req.userId!;
 
   try {
     await userWordService.trackUserWordActivity(words, userId);
 
-    sendSuccessResponse(res, "User word activity tracked successfully.", HTTP_SUCCESS_STATUS.OK);
+    await notificationService.sendTrackNotification(userId);
+
+    sendSuccessResponse(
+      res,
+      "User word activity tracked successfully.",
+      HTTP_SUCCESS_STATUS.OK
+    );
 
     return;
   } catch (error) {

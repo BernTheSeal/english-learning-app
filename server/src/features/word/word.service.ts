@@ -1,4 +1,5 @@
 import { HTTP_ERROR_STATUS } from "../../config/httpStatus";
+import { Meanings } from "../dictionary/dictionary.type";
 import wordRepository from "./repositories/word.repository";
 import wordFrequencyRepository from "./repositories/wordFrequency.repository";
 import { WordError } from "./word.error";
@@ -17,20 +18,28 @@ const getById = async (id: string) => {
   return await wordRepository.getById(id);
 };
 
-const getWordType = (data: any) => {
-  const types = data.meanings.map((m: any) => m.partOfSpeech);
-  return types;
+const getWordType = (data: Meanings[]) => {
+  const types = data.map((m: Meanings) => m.partOfSpeech);
+  const uniqueTypes = [...new Set(types)];
+  return uniqueTypes;
 };
 
 const getByIdOrThrow = async (id: string) => {
   const word = await wordRepository.getById(id);
   if (!word) {
-    throw new WordError("The requested word could not be found.", HTTP_ERROR_STATUS.NOT_FOUND);
+    throw new WordError(
+      "The requested word could not be found.",
+      HTTP_ERROR_STATUS.NOT_FOUND
+    );
   }
   return word;
 };
 
-const toggleWordFrequency = async ({ wordId, userId, point }: toggleWordFrequencyInput) => {
+const toggleWordFrequency = async ({
+  wordId,
+  userId,
+  point,
+}: toggleWordFrequencyInput) => {
   await getByIdOrThrow(wordId);
 
   const userVote = await wordFrequencyRepository.getByWordIdAndUserId(wordId, userId);

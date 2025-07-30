@@ -1,6 +1,10 @@
 import express, { RequestHandler } from "express";
 
-import { getUserWords, createUserWord, trackUserWordActivity } from "./userWord.controllar";
+import {
+  getUserWords,
+  createUserWord,
+  trackUserWordActivity,
+} from "./userWord.controllar";
 
 import { validateRequest } from "../../middlewares/validateRequest";
 
@@ -15,7 +19,6 @@ router.post(
   "/",
   checkAccessToken,
   validateRequest({ body: createUserWordSchema }),
-  //authGuard("word:create:own"),
 
   createUserWord as unknown as RequestHandler
 );

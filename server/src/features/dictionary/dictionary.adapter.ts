@@ -23,7 +23,9 @@ const normalizeWord = (raw: unknown): NormalizedWord | null => {
             const lastPart = beforeMp3.split("/").pop();
             const parts = lastPart?.split("-") ?? [];
 
-            const match = parts.find((part) => ACCENT_WHITELIST.includes(part.toLowerCase()));
+            const match = parts.find((part) =>
+              ACCENT_WHITELIST.includes(part.toLowerCase())
+            );
 
             if (match) {
               accent = match.toLowerCase();
@@ -38,7 +40,10 @@ const normalizeWord = (raw: unknown): NormalizedWord | null => {
       : [];
   };
 
-  const simplifiedDefinitions = (meaning: Meanings, definitions: Definitions[]): Definitions[] | [] => {
+  const simplifiedDefinitions = (
+    meaning: Meanings,
+    definitions: Definitions[]
+  ): Definitions[] | [] => {
     return Array.isArray(meaning.definitions)
       ? meaning.definitions
           .map(

@@ -10,9 +10,12 @@ const router = express.Router();
 
 router.post(
   "/:wordId/frequency",
-  // authGuard("word:toggle-frequency"),
+
   checkAccessToken,
-  validateRequest({ body: createWordFrequencySchema, params: getWordFrequencyByWordIdSchema }),
+  validateRequest({
+    body: createWordFrequencySchema,
+    params: getWordFrequencyByWordIdSchema,
+  }),
   toggleWordFrequency as unknown as RequestHandler
 );
 

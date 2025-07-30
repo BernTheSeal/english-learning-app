@@ -29,6 +29,39 @@ const getByUserId = async (userId: string) => {
   return result;
 };
 
+const getWordsReadyForStatusUpgrade = async (userId: string) => {
+  const userWords = await UserWord.find(
+    {
+      $and: [
+        { userId },
+        { status: { $in: ["new", "learning"] } },
+        { meaningViewSkippedCount: { $mod: [10, 0] } },
+        { meaningViewSkippedCount: { $ne: 0 } },
+      ],
+    },
+    { wordId: 1, status: 1, meaningViewSkippedCount: 1 }
+  ).populate("wordId", "name");
+
+  const result = userWords
+    .map((wordDoc) => {
+      if (
+        typeof wordDoc.wordId === "object" &&
+        wordDoc.wordId !== null &&
+        "name" in wordDoc.wordId
+      ) {
+        return {
+          _id: wordDoc._id,
+          word: wordDoc.wordId.name,
+          status: wordDoc.status,
+          meaningViewSkippedCount: wordDoc.meaningViewSkippedCount,
+        };
+      }
+    })
+    .filter((w) => w !== undefined);
+
+  return result;
+};
+
 const existsByIds = async ({ userId, wordId }: idsInput) => {
   const isExists = await UserWord.findOne({ userId, wordId });
   return !!isExists;
@@ -38,4 +71,10 @@ const bulkWrite = async (data: any) => {
   await UserWord.bulkWrite(data);
 };
 
-export default { create, getByUserId, existsByIds, bulkWrite };
+export default {
+  create,
+  getByUserId,
+  getWordsReadyForStatusUpgrade,
+  existsByIds,
+  bulkWrite,
+};

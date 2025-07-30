@@ -20,7 +20,7 @@ const WordSchema = new mongoose.Schema<WordDocument>(
       required: true,
     },
 
-    first3k: { type: Boolean, default: null },
+    first3k: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

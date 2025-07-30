@@ -1,10 +1,9 @@
-import userWordRepository from "./userWord.repository";
-
 import { createUserWordInput, idsInput, trackUserWordActivityInput } from "./userWord.input";
 import { UserWordError } from "./userWord.error";
 import { HTTP_ERROR_STATUS } from "../../config/httpStatus";
 
 import wordRepository from "../word/repositories/word.repository";
+import userWordRepository from "./userWord.repository";
 
 const getUserWord = async (userId: string) => {
   return await userWordRepository.getByUserId(userId);
@@ -38,7 +37,7 @@ const trackUserWordActivity = async (words: trackUserWordActivityInput[], userId
           update: {
             $inc: {
               reviewCount: 1,
-              ...(word.viewMeaning && { meaningViewSkippedCount: 1 }),
+              ...(word.viewMeaning ? {} : { meaningViewSkippedCount: 1 }),
             },
             $set: { lastReviewAt: date },
           },
@@ -47,9 +46,12 @@ const trackUserWordActivity = async (words: trackUserWordActivityInput[], userId
     })
     .filter(Boolean);
 
+  let updatedWords;
   if (bulkOperations.length > 0) {
-    await userWordRepository.bulkWrite(bulkOperations);
+    updatedWords = await userWordRepository.bulkWrite(bulkOperations);
   }
+
+  return updatedWords;
 };
 
 export default { createUserWord, getUserWord, trackUserWordActivity };

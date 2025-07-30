@@ -4,14 +4,18 @@ import { sendSuccessResponse } from "../../shared/response";
 import { HTTP_SUCCESS_STATUS } from "../../config/httpStatus";
 import { GetWordFromDictionaryHandler } from "./dictionary.type";
 
-export const getWordFromDictionary: GetWordFromDictionaryHandler = async (req, res, next) => {
+export const getWordFromDictionary: GetWordFromDictionaryHandler = async (
+  req,
+  res,
+  next
+) => {
   const { word } = req.validatedParams;
   let wordFromDb;
 
   try {
     const WordInfoFromDictionary = await dictionaryService.getWordOrThrow(word);
 
-    const wordType = wordService.getWordType(WordInfoFromDictionary);
+    const wordType = wordService.getWordType(WordInfoFromDictionary.meanings);
 
     wordFromDb = await wordService.getWordByName(word);
 
@@ -19,7 +23,9 @@ export const getWordFromDictionary: GetWordFromDictionaryHandler = async (req, r
       wordFromDb = await wordService.createWord({ name: word, types: wordType });
     }
 
-    const frequency = await wordService.getWordFrequencyByWordId(wordFromDb._id.toString());
+    const frequency = await wordService.getWordFrequencyByWordId(
+      wordFromDb._id.toString()
+    );
 
     sendSuccessResponse(
       res,

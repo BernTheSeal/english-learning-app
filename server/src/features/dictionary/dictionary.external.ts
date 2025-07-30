@@ -5,7 +5,9 @@ import { HTTP_ERROR_STATUS } from "../../config/httpStatus";
 
 const fetchWord = async (word: string): Promise<unknown> => {
   try {
-    const res = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    const res = await axios.get(
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
+    );
 
     return res.data;
   } catch (error: any) {
