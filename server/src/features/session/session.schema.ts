@@ -1,7 +1,9 @@
 import { z } from "zod";
-import { zodEmail, zodPassword } from "../../shared/zod";
+import { zodEmail } from "../../shared/zod";
 
-export const createSessionSchema = z.object({
-  email: zodEmail,
-  password: zodPassword,
-});
+export const createSessionSchema = z
+  .object({
+    email: zodEmail,
+    password: z.string(),
+  })
+  .strict();

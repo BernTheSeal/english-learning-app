@@ -20,6 +20,7 @@ import dictionaryRoutes from "./features/dictionary/dictionary.route";
 import wordRoutes from "./features/word/word.route";
 import userWordRoutes from "./features/userWord/userWord.route";
 import notificationRoutes from "./features/notification/notification.route";
+import wordHistoryRoutes from "./features/wordHistory/wordHistory.route";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
@@ -43,7 +44,7 @@ app.use(sanitizeRequest);
 
 app.use(helmet());
 
-app.use(generalLimiter);
+// app.use(generalLimiter);
 
 app.use("/api/notification", notificationRoutes);
 
@@ -56,6 +57,7 @@ app.use("/api/session", sessionRoutes);
 app.use("/api/dictionary", dictionaryRoutes);
 
 app.use("/api/word", wordRoutes);
+app.use("/api/word-history", wordHistoryRoutes);
 
 app.use("/api/role", roleRoutes);
 app.use("/api/role-permission", rolePermissionRoutes);

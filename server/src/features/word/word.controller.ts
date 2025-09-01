@@ -11,7 +11,11 @@ export const toggleWordFrequency: ToogleWordFrequencyHandler = async (req, res, 
   try {
     await wordService.toggleWordFrequency({ userId, wordId, point });
 
-    sendSuccessResponse(res, "Your rating for this word has been updated.", HTTP_SUCCESS_STATUS.OK);
+    sendSuccessResponse(
+      res,
+      "Your rating for this word has been updated.",
+      HTTP_SUCCESS_STATUS.OK
+    );
 
     return;
   } catch (error) {

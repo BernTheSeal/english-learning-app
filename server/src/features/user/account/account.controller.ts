@@ -6,21 +6,36 @@ import roleService from "../../role/role.service";
 import sessionService from "../../session/session.service";
 
 import { sendSuccessResponse } from "../../../shared/response/sendSuccessResponse";
-import { clearSessionTokenFromCookie } from "../../../shared/cookie/index";
+import {
+  clearSessionTokenFromCookie,
+  saveSessionTokenInCookie,
+} from "../../../shared/cookie/index";
 
-import { RegisterHandler, DeleteUserHandler } from "./account.handler";
+import { CreateUserHandler, DeleteUserHandler } from "./account.handler";
 
-export const register: RegisterHandler = async (req, res, next) => {
+export const createUser: CreateUserHandler = async (req, res, next) => {
   const { email, password, username } = req.validatedBody;
+
   try {
     const role = await roleService.getRoleByName("user");
 
-    const user = await accountService.createUser({ email, password, username });
+    const user = await accountService.createUser({
+      email,
+      password,
+      username,
+    });
 
     await userRoleService.addRoleToUser({
       userId: user._id.toString(),
       roleId: role._id.toString(),
     });
+
+    const { accessToken, refreshToken } = await sessionService.createSession(
+      user._id.toString()
+    );
+
+    saveSessionTokenInCookie(res, accessToken, "accessToken");
+    saveSessionTokenInCookie(res, refreshToken, "refreshToken");
 
     return sendSuccessResponse(
       res,

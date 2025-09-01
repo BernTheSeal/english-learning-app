@@ -18,6 +18,19 @@ const userSchema = new mongoose.Schema<UserDocument>(
       required: true,
       unique: true,
     },
+    name: {
+      type: String,
+      default: "",
+    },
+    bio: {
+      type: String,
+      default: "",
+    },
+    level: {
+      type: String,
+      enum: ["a1", "a2", "b1", "b2", "c1", "c2", "native"],
+      default: null,
+    },
     lastLogin: {
       type: Date,
       default: Date.now,

@@ -40,6 +40,6 @@ const NotificationSchema = new mongoose.Schema<NotificationDocument>(
 );
 
 export const Notification = mongoose.model<NotificationDocument>(
-  "notification",
+  "Notification",
   NotificationSchema
 );

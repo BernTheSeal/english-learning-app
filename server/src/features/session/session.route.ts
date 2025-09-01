@@ -1,6 +1,11 @@
 import express, { RequestHandler } from "express";
 
-import { createSession, deleteSession, checkSession, generateNewAccessToken } from "./session.controller";
+import {
+  createSession,
+  deleteSession,
+  checkSession,
+  generateNewAccessToken,
+} from "./session.controller";
 
 import { checkAccessToken } from "../../middlewares/checkAccessToken";
 import { loginLimiter } from "../../middlewares/rateLimiter";
@@ -13,7 +18,7 @@ router
   .route("/")
   .get(checkAccessToken, checkSession)
   .post(
-    loginLimiter,
+    // loginLimiter,
     validateRequest({ body: createSessionSchema }),
     createSession as unknown as RequestHandler
   )

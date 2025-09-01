@@ -1,1 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import "tailwindcss";
+
+@theme {
+  --font-inter: "inter", "sans-serif";
+}
+
+.login-register-text {
+  @apply text-white  text-4xl sm:text-5xl  tracking-wide font-semibold;
+}
+
+.error {
+  @apply sm:text-sm text-xs font-semibold p-4 top-0 left-0 right-0 bg-red-500 text-white z-1 text-center rounded;
+}

@@ -21,7 +21,7 @@ const updateByIds = async ({ wordId, userId, point }: toggleWordFrequencyInput) 
   await WordFrequency.updateOne({ userId, wordId }, { $set: { point } });
 };
 
-const getByWordId = async (wordId: string) => {
+const getByWordId = async (wordId: string, userId: string) => {
   const [result] = await WordFrequency.aggregate([
     { $match: { wordId: new mongoose.Types.ObjectId(wordId) } },
     {
@@ -42,7 +42,17 @@ const getByWordId = async (wordId: string) => {
     },
   ]);
 
-  return result ?? null;
+  if (!result) return null;
+
+  const userVote = await WordFrequency.findOne({
+    wordId,
+    userId,
+  }).select("point");
+
+  return {
+    ...result,
+    userPoint: userVote ? userVote.point : null,
+  };
 };
 
 const getByWordIdAndUserId = async (wordId: string, userId: string) => {

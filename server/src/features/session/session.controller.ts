@@ -4,7 +4,10 @@ import sessionService from "./session.service";
 
 import { generateAccessToken } from "../../shared/token/index";
 
-import { saveSessionTokenInCookie, clearSessionTokenFromCookie } from "../../shared/cookie/index";
+import {
+  saveSessionTokenInCookie,
+  clearSessionTokenFromCookie,
+} from "../../shared/cookie/index";
 
 import { CreateSessionHandler } from "./session.handler";
 import { Handler } from "express";
@@ -21,7 +24,9 @@ export const createSession: CreateSessionHandler = async (req, res, next) => {
   try {
     const userId = await sessionService.validateCredentials(email, password);
 
-    const { accessToken, refreshToken } = await sessionService.createSession(userId.toString());
+    const { accessToken, refreshToken } = await sessionService.createSession(
+      userId.toString()
+    );
 
     saveSessionTokenInCookie(res, accessToken, "accessToken");
     saveSessionTokenInCookie(res, refreshToken, "refreshToken");

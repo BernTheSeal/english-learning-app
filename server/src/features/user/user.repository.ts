@@ -30,24 +30,20 @@ const getById = async (userId: string) => {
   return await User.findById(userId);
 };
 
-const getProfileById = async (userId: string) => {
-  return await User.findById(userId).select("username createdAt lastLogin");
-};
-
-const existsById = async (userId: string) => {
-  return await User.exists({ _id: userId });
-};
-
-const getWithPasswordById = async (userId: string) => {
-  return await User.findById(userId).select("+password");
-};
-
 const getByEmail = async (email: string) => {
   return await User.findOne({ email });
 };
 
-const existsByEmail = async (email: string) => {
-  return await User.exists({ email });
+const getByUsername = async (username: string) => {
+  return await User.findOne({ username });
+};
+
+const getProfileById = async (userId: string) => {
+  return await User.findById(userId).select("username createdAt lastLogin");
+};
+
+const getWithPasswordById = async (userId: string) => {
+  return await User.findById(userId).select("+password");
 };
 
 const getWithPasswordByEmail = async (email: string) => {
@@ -62,9 +58,8 @@ export default {
   listByFilter,
   getById,
   getProfileById,
-  existsById,
   getWithPasswordById,
   getByEmail,
-  existsByEmail,
+  getByUsername,
   getWithPasswordByEmail,
 };

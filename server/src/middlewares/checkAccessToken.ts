@@ -4,7 +4,11 @@ import { HTTP_ERROR_STATUS } from "../config/httpStatus";
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../shared/token";
 
-export const checkAccessToken = async (req: Request, res: Response, next: NextFunction) => {
+export const checkAccessToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const accessToken: string = req.cookies.accessToken;
 
   try {

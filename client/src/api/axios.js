@@ -5,25 +5,30 @@ const api = axios.create({
   withCredentials: true,
 });
 
+const excludedRoutes = [
+  "/api/session/",
+  "/api/user/account/register",
+  "/api/session/refresh",
+];
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (originalRequest.url === "/api/auth/generate-new-access-token") {
+    if (excludedRoutes.includes(originalRequest.url)) {
       return Promise.reject(error);
     }
 
     if (
       error.response?.status === 401 &&
-      error.response.data?.type === "token_error" &&
+      error.response.data?.errorCategory === "session_error" &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true;
 
       try {
-        await api.post("/api/auth/generate-new-access-token");
-
+        await api.get("/api/session/refresh");
         return api(originalRequest);
       } catch (err) {
         return Promise.reject(err);

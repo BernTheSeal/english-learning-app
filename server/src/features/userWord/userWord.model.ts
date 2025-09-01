@@ -5,12 +5,12 @@ const userWordSchema = new mongoose.Schema<UserWordDocument>(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     wordId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "word",
+      ref: "Word",
       required: true,
     },
     status: {
@@ -43,4 +43,4 @@ const userWordSchema = new mongoose.Schema<UserWordDocument>(
 
 userWordSchema.index({ userId: 1, wordId: 1 }, { unique: true });
 
-export const UserWord = mongoose.model("userWord", userWordSchema);
+export const UserWord = mongoose.model("UserWord", userWordSchema);

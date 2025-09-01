@@ -54,8 +54,8 @@ const toggleWordFrequency = async ({
   }
 };
 
-const getWordFrequencyByWordId = async (wordId: string) => {
-  return await wordFrequencyRepository.getByWordId(wordId);
+const getWordFrequencyByWordId = async (wordId: string, userId: string) => {
+  return await wordFrequencyRepository.getByWordId(wordId, userId);
 };
 
 export default {

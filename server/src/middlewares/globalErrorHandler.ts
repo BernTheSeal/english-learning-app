@@ -15,7 +15,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.log(err);
   sendErrorResponse(
     res,
-    "An unexpected error occurred.",
+    "Oops! Something went wrong. Please try again in a moment.",
     HTTP_ERROR_STATUS.INTERNAL_SERVER_ERROR,
     ERROR_CATEGORY.APPLICATION
   );

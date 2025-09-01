@@ -10,17 +10,37 @@ import { RoleDocument } from "../../role/role.type";
 import { createUserInput, deleteUserInput } from "./account.input";
 
 const createUser = async ({ email, password, username }: createUserInput) => {
-  const isExists = await userRepository.getByEmail(email);
-  if (isExists) {
-    throw new UserError("User already exists with this email adress.", HTTP_ERROR_STATUS.CONFLICT);
+  const existingUserByEmail = await userRepository.getByEmail(email);
+  if (existingUserByEmail) {
+    throw new UserError(
+      "This email address is already registered. Please try logging in or use a different email.",
+      HTTP_ERROR_STATUS.CONFLICT
+    );
   }
+
+  const existingUserByUsername = await userRepository.getByUsername(username);
+  if (existingUserByUsername) {
+    throw new UserError(
+      "This username is already taken. Please choose another one.",
+      HTTP_ERROR_STATUS.CONFLICT
+    );
+  }
+
   const hashedPassword = await hashPassword(password);
-  const user = await userRepository.create({ email, password: hashedPassword, username });
+
+  const user = await userRepository.create({
+    email,
+    password: hashedPassword,
+    username,
+  });
+
   return user;
 };
 
 const deleteUser = async ({ userIdFromToken, userId }: deleteUserInput) => {
-  const userRoles = (await userRoleRepository.getRolesByUserId(userIdFromToken)) as RoleDocument[];
+  const userRoles = (await userRoleRepository.getRolesByUserId(
+    userIdFromToken
+  )) as RoleDocument[];
 
   const canDelete = userPolicy.canDeleteUser({
     requesterId: userIdFromToken,

@@ -2,7 +2,11 @@ import { HTTP_ERROR_STATUS } from "../../config/httpStatus";
 
 import SessionError from "./session.error";
 
-import { generateAccessToken, generateRefreshToken, verifyToken } from "../../shared/token/index";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyToken,
+} from "../../shared/token/index";
 
 import { comparePassword } from "../../shared/crypto/index";
 
@@ -45,7 +49,7 @@ const validateCredentials = async (email: string, password: string) => {
 
   if (!user) {
     throw new SessionError(
-      "Invalid credentials. Please check your email and password.",
+      "We couldn't log you in. Please check your email and password.",
       HTTP_ERROR_STATUS.UNAUTHORIZED,
       null
     );
@@ -54,7 +58,7 @@ const validateCredentials = async (email: string, password: string) => {
   const isPasswordValid = await comparePassword(password, user.password);
   if (!isPasswordValid) {
     throw new SessionError(
-      "Invalid credentials. Please check your email and password.",
+      "We couldn't log you in. Please check your email and password.",
       HTTP_ERROR_STATUS.UNAUTHORIZED,
       null
     );

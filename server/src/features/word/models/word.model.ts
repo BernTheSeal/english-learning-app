@@ -25,4 +25,4 @@ const WordSchema = new mongoose.Schema<WordDocument>(
   { timestamps: true }
 );
 
-export const Word = mongoose.model<WordDocument>("word", WordSchema);
+export const Word = mongoose.model<WordDocument>("Word", WordSchema);

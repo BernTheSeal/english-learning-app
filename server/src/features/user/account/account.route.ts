@@ -4,16 +4,16 @@ import { validateRequest } from "../../../middlewares/validateRequest";
 import { authGuard } from "../../../middlewares/authGuard";
 import { registerLimiter } from "../../../middlewares/rateLimiter";
 
-import { register, deleteUser } from "./account.controller";
+import { createUser, deleteUser } from "./account.controller";
 import { createUserSchema, deleteUserSchema } from "./account.schema";
 
 const router = express.Router();
 
 router.post(
-  "/register",
+  "/",
   registerLimiter,
   validateRequest({ body: createUserSchema }),
-  register as unknown as RequestHandler
+  createUser as unknown as RequestHandler
 );
 
 router.delete(
