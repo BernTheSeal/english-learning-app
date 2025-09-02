@@ -35,7 +35,10 @@ export const createUserWord: CreateUserWordHandler = async (req, res, next) => {
     } else {
       const WordInfoFromDictionary = await dictionaryService.getWordOrThrow(word);
       const wordTypes = wordService.getWordType(WordInfoFromDictionary.meanings);
-      const createdWord = await wordService.createWord({ name: word, types: wordTypes });
+      const createdWord = await wordService.findOrCreateWord({
+        name: word,
+        types: wordTypes,
+      });
       wordId = createdWord._id;
     }
 

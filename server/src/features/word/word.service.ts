@@ -6,8 +6,8 @@ import { WordError } from "./word.error";
 import { createWordInput } from "./word.input";
 import { toggleWordFrequencyInput } from "./word.input";
 
-const createWord = async ({ name, level, first3k, types }: createWordInput) => {
-  return await wordRepository.create({ name, level, first3k, types });
+const findOrCreateWord = async ({ name, level, first3k, types }: createWordInput) => {
+  return await wordRepository.findOrCreate({ name, level, first3k, types });
 };
 
 const getWordByName = async (name: string) => {
@@ -59,7 +59,7 @@ const getWordFrequencyByWordId = async (wordId: string, userId: string) => {
 };
 
 export default {
-  createWord,
+  findOrCreateWord,
   getWordByName,
   getWordType,
   getById,

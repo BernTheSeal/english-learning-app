@@ -19,11 +19,7 @@ export const getWordFromDictionary: GetWordFromDictionaryHandler = async (
 
     const wordType = wordService.getWordType(WordInfoFromDictionary.meanings);
 
-    wordFromDb = await wordService.getWordByName(word);
-
-    if (!wordFromDb) {
-      wordFromDb = await wordService.createWord({ name: word, types: wordType });
-    }
+    wordFromDb = await wordService.findOrCreateWord({ name: word, types: wordType });
 
     await wordHistoryService.createWordHistory(userId, wordFromDb._id.toString());
 

@@ -12,4 +12,5 @@ export const ERROR_CATEGORY = {
   DICTIONARY: "dictionary_error",
   WORD: "word_error",
   USER_WORD: "userWord_error",
+  SENTENCE: "sentence_error",
 } as const;
