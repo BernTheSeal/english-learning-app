@@ -6,7 +6,6 @@ import userRepository from "../user.repository";
 import userRoleRepository from "../../userRole/userRole.repository";
 
 import { hashPassword } from "../../../shared/crypto/index";
-import { RoleDocument } from "../../role/role.type";
 import { createUserInput, deleteUserInput } from "./account.input";
 
 const createUser = async ({ email, password, username }: createUserInput) => {
@@ -38,9 +37,7 @@ const createUser = async ({ email, password, username }: createUserInput) => {
 };
 
 const deleteUser = async ({ userIdFromToken, userId }: deleteUserInput) => {
-  const userRoles = (await userRoleRepository.getRolesByUserId(
-    userIdFromToken
-  )) as RoleDocument[];
+  const userRoles = await userRoleRepository.getRolesByUserId(userIdFromToken);
 
   const canDelete = userPolicy.canDeleteUser({
     requesterId: userIdFromToken,

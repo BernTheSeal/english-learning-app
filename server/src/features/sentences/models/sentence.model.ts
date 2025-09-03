@@ -22,8 +22,14 @@ const sentenceSchema = new mongoose.Schema<SentenceDocument>(
       ref: "Sentence",
       default: null,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
+
+sentenceSchema.index({ parentId: 1 });
 
 export const Sentence = mongoose.model<SentenceDocument>("Sentence", sentenceSchema);

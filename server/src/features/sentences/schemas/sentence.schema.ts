@@ -8,3 +8,22 @@ export const createSentenceBodySchema = z
     parentId: zodMongoIdObjectId.optional(),
   })
   .strict();
+
+export const deleteSentenceSchema = z
+  .object({
+    sentenceId: zodMongoIdObjectId,
+  })
+  .strict();
+
+export const getSentencesSchema = z
+  .object({
+    cursor: zodMongoIdObjectId.optional(),
+    parentId: zodMongoIdObjectId.optional(),
+  })
+  .strict();
+
+export const getASentenceSchema = z
+  .object({
+    sentenceId: zodMongoIdObjectId,
+  })
+  .strict();

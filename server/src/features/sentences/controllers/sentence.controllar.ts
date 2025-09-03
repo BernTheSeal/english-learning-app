@@ -4,11 +4,43 @@ import dictionaryService from "../../dictionary/dictionary.service";
 
 import { sendSuccessResponse } from "../../../shared/response";
 import { HTTP_SUCCESS_STATUS } from "../../../config/httpStatus";
-import { CreateSentenceHandler } from "../types/sentence.type";
+import {
+  CreateSentenceHandler,
+  DeleteSentenceHandler,
+  GetSentencesHandler,
+  GetASentenceHandler,
+} from "../types/sentence.type";
+import { Handler } from "express";
+
+export const getSentences: GetSentencesHandler = async (req, res, next) => {
+  const { cursor, parentId } = req.validatedQuery;
+  try {
+    const data = await sentenceService.getSentences({ cursor, parentId });
+    sendSuccessResponse(
+      res,
+      "Sentences successfully fetched.",
+      HTTP_SUCCESS_STATUS.OK,
+      data
+    );
+    return;
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getASentence: GetASentenceHandler = async (req, res, next) => {
+  const { sentenceId } = req.validatedParams;
+  try {
+    const sentence = await sentenceService.getASentence({ sentenceId });
+    sendSuccessResponse(res, "Sentence successfully fetched.", HTTP_SUCCESS_STATUS.OK, {
+      sentence,
+    });
+    return;
+  } catch (error) {}
+};
 
 export const createSentence: CreateSentenceHandler = async (req, res, next) => {
   const { content, word, parentId } = req.validatedBody;
-  console.log("PARENT_ID::", parentId);
   const userId = req.userId!;
 
   try {
@@ -42,6 +74,19 @@ export const createSentence: CreateSentenceHandler = async (req, res, next) => {
       { newSentence }
     );
 
+    return;
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteSentence: DeleteSentenceHandler = async (req, res, next) => {
+  const { sentenceId } = req.validatedParams;
+  const userId = req.userId!;
+
+  try {
+    await sentenceService.deleteSenteceOrThrow({ sentenceId, userId });
+    sendSuccessResponse(res, "Sentence successfully deleted.", HTTP_SUCCESS_STATUS.OK);
     return;
   } catch (error) {
     next(error);

@@ -1,7 +1,23 @@
 import sentenceRepository from "../repository/sentence.repository";
-import { createSentenceInput } from "../types/sentence.type";
+import {
+  createSentenceInput,
+  deleteSenteceInput,
+  getASentenceInput,
+  getSentencesInput,
+} from "../types/sentence.type";
 import { SentenceError } from "../sentence.error";
 import { HTTP_ERROR_STATUS } from "../../../config/httpStatus";
+import userRoleRepository from "../../userRole/userRole.repository";
+import sentencePolicy from "../../../policies/sentence.policy";
+import { Types } from "mongoose";
+
+const getSentences = async ({ cursor, parentId }: getSentencesInput) => {
+  return await sentenceRepository.getAll({ cursor, parentId });
+};
+
+const getASentence = async ({ sentenceId }: getASentenceInput) => {
+  return await sentenceRepository.getById(sentenceId);
+};
 
 const createSentenceOrThrow = async ({
   content,
@@ -45,4 +61,35 @@ const createSentenceOrThrow = async ({
   return newSentence;
 };
 
-export default { createSentenceOrThrow };
+const deleteSenteceOrThrow = async ({ sentenceId, userId }: deleteSenteceInput) => {
+  const deletedSentece = await sentenceRepository.getById(sentenceId);
+
+  if (!deletedSentece) {
+    throw new SentenceError(
+      "The sentence you are trying to delete does not exist.",
+      HTTP_ERROR_STATUS.NOT_FOUND
+    );
+  }
+
+  const userRoles = await userRoleRepository.getRolesByUserId(userId);
+
+  const canDelete = sentencePolicy.canDeleteSentece({
+    requesterId: userId,
+    sentenceOwnerId: deletedSentece.userId as Types.ObjectId,
+    roles: userRoles,
+  });
+
+  if (!canDelete.allowed) {
+    throw new SentenceError(`${canDelete.reason}`, HTTP_ERROR_STATUS.FORBIDDEN);
+  }
+
+  await sentenceRepository.deleteById(sentenceId);
+  return;
+};
+
+export default {
+  getSentences,
+  createSentenceOrThrow,
+  deleteSenteceOrThrow,
+  getASentence,
+};

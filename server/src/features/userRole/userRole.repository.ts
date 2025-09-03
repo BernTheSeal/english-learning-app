@@ -1,4 +1,6 @@
+import { RoleDocument } from "../role/role.type";
 import { UserRole } from "./userRole.model";
+import { UserRoleDocument } from "./userRole.type";
 
 const create = async (userId: string, roleId: string) => {
   await UserRole.create({ userId, roleId });
@@ -26,7 +28,7 @@ const deleteUsersByRoleId = async (roleId: string) => {
 
 const getRolesByUserId = async (userId: string) => {
   const roles = await UserRole.find({ userId }).populate("roleId");
-  return roles.map(({ roleId }) => roleId);
+  return roles.map(({ roleId }) => roleId as RoleDocument);
 };
 
 const getUsersByRoleId = async (roleId: string) => {

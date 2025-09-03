@@ -1,4 +1,5 @@
 import { RoleDocument } from "../features/role/role.type";
+import { Policy } from "./policy.type";
 
 const canDeleteUser = ({
   requesterId,
@@ -8,7 +9,7 @@ const canDeleteUser = ({
   requesterId: string;
   targetId: string;
   roles: RoleDocument[];
-}) => {
+}): Policy => {
   const isAdmin = roles.some((role) => role.name === "admin");
 
   if (isAdmin && requesterId === targetId) {

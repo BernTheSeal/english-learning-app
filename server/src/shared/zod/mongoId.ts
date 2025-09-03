@@ -7,7 +7,7 @@ export const zodMongoId = z
   .regex(/^[0-9a-fA-F]{24}$/, "Invalid MongoDB ObjectId format.");
 
 export const zodMongoIdObjectId = z
-  .string()
+  .string({ required_error: "Id is required!" })
   .length(24)
   .regex(/^[0-9a-fA-F]{24}$/)
   .transform((id) => new Types.ObjectId(id));
