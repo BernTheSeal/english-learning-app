@@ -19,7 +19,11 @@ export const validateRequest = (schemas: ZodRequestSchemas) => {
 
       const resultBody = await bodySchema.safeParseAsync(req.body);
       if (!resultBody.success) {
-        throw new ValidationError("validation error", HTTP_ERROR_STATUS.BAD_REQUEST, resultBody.error.issues);
+        throw new ValidationError(
+          "validation error",
+          HTTP_ERROR_STATUS.BAD_REQUEST,
+          resultBody.error.issues
+        );
       }
 
       const resultQuery = await querySchema.safeParseAsync(req.query);

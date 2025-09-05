@@ -7,7 +7,6 @@ import BaseError from "../errors/baseError";
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err instanceof BaseError) {
-    console.error(err);
     sendErrorResponse(res, err.message, err.statusCode, err.errorCategory, err.errors);
     return;
   }

@@ -1,5 +1,5 @@
 import z from "zod";
-import { zodWord, zodMongoIdObjectId, zodSentence } from "../../../shared/zod";
+import { zodWord, zodMongoIdObjectId, zodSentence } from "../../shared/zod";
 
 export const createSentenceBodySchema = z
   .object({

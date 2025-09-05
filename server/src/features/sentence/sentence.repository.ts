@@ -1,6 +1,10 @@
-import { Sentence } from "../models/sentence.model";
-import { createSentenceInput, getSentencesInput } from "../types/sentence.type";
 import { Types } from "mongoose";
+import {
+  createSentenceInput,
+  getSentencesInput,
+  incrementCountInput,
+} from "./sentence.input";
+import { Sentence } from "./sentence.model";
 
 const create = async ({
   userId,
@@ -40,4 +44,11 @@ const getAll = async ({ cursor, parentId }: getSentencesInput) => {
   };
 };
 
-export default { create, getAll, deleteById, getById };
+const incrementCount = async ({ sentenceId, category, count }: incrementCountInput) => {
+  return await Sentence.updateOne(
+    { _id: sentenceId },
+    { $inc: { [`likeCount.${category}`]: count } }
+  );
+};
+
+export default { create, getAll, deleteById, getById, incrementCount };

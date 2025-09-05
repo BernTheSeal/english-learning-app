@@ -1,16 +1,16 @@
-import sentenceService from "../services/sentence.service";
-import wordService from "../../word/word.service";
-import dictionaryService from "../../dictionary/dictionary.service";
+import sentenceService from "./sentence.service";
+import wordService from "../word/word.service";
+import dictionaryService from "../dictionary/dictionary.service";
 
-import { sendSuccessResponse } from "../../../shared/response";
-import { HTTP_SUCCESS_STATUS } from "../../../config/httpStatus";
+import { sendSuccessResponse } from "../../shared/response";
+import { HTTP_SUCCESS_STATUS } from "../../config/httpStatus";
+
 import {
   CreateSentenceHandler,
   DeleteSentenceHandler,
   GetSentencesHandler,
   GetASentenceHandler,
-} from "../types/sentence.type";
-import { Handler } from "express";
+} from "./sentence.handler";
 
 export const getSentences: GetSentencesHandler = async (req, res, next) => {
   const { cursor, parentId } = req.validatedQuery;

@@ -1,5 +1,14 @@
 import mongoose from "mongoose";
-import { SentenceDocument } from "../types/sentence.type";
+import { SentenceDocument, ILikeCount } from "./sentence.type";
+
+const likeCountSchema = new mongoose.Schema<ILikeCount>(
+  {
+    funny: { type: Number, default: 0 },
+    daily: { type: Number, default: 0 },
+    formal: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
 
 const sentenceSchema = new mongoose.Schema<SentenceDocument>(
   {
@@ -26,10 +35,11 @@ const sentenceSchema = new mongoose.Schema<SentenceDocument>(
       type: Boolean,
       default: false,
     },
+    likeCount: { type: likeCountSchema, default: () => ({}) },
   },
   { timestamps: true }
 );
 
-sentenceSchema.index({ parentId: 1 });
+sentenceSchema.index({ wordId: 1, parentId: 1, userId: 1 });
 
 export const Sentence = mongoose.model<SentenceDocument>("Sentence", sentenceSchema);

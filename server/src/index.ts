@@ -21,7 +21,8 @@ import wordRoutes from "./features/word/word.route";
 import userWordRoutes from "./features/userWord/userWord.route";
 import notificationRoutes from "./features/notification/notification.route";
 import wordHistoryRoutes from "./features/wordHistory/wordHistory.route";
-import sentenceRoutes from "./features/sentences/routes/sentence.route";
+import sentenceRoutes from "./features/sentence/sentence.route";
+import sentenceLikeRoutes from "./features/sentence-like/sentenceLike.route";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
@@ -61,6 +62,7 @@ app.use("/api/word", wordRoutes);
 app.use("/api/word-history", wordHistoryRoutes);
 
 app.use("/api/sentence", sentenceRoutes);
+app.use("/api/sentence-like", sentenceLikeRoutes);
 
 app.use("/api/role", roleRoutes);
 app.use("/api/role-permission", rolePermissionRoutes);

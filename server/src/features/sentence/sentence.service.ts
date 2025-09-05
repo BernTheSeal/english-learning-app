@@ -1,14 +1,15 @@
-import sentenceRepository from "../repository/sentence.repository";
+import sentenceRepository from "./sentence.repository";
 import {
   createSentenceInput,
   deleteSenteceInput,
   getASentenceInput,
   getSentencesInput,
-} from "../types/sentence.type";
-import { SentenceError } from "../sentence.error";
-import { HTTP_ERROR_STATUS } from "../../../config/httpStatus";
-import userRoleRepository from "../../userRole/userRole.repository";
-import sentencePolicy from "../../../policies/sentence.policy";
+} from "./sentence.input";
+
+import { SentenceError } from "./sentence.error";
+import { HTTP_ERROR_STATUS } from "../../config/httpStatus";
+import userRoleRepository from "../userRole/userRole.repository";
+import sentencePolicy from "../../policies/sentence.policy";
 import { Types } from "mongoose";
 
 const getSentences = async ({ cursor, parentId }: getSentencesInput) => {

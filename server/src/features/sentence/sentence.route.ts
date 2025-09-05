@@ -4,18 +4,25 @@ import {
   deleteSentence,
   getASentence,
   getSentences,
-} from "../controllers/sentence.controllar";
-import { validateRequest } from "../../../middlewares/validateRequest";
+} from "./sentence.controller";
+import { validateRequest } from "../../middlewares/validateRequest";
 import {
   createSentenceBodySchema,
   deleteSentenceSchema,
   getASentenceSchema,
   getSentencesSchema,
-} from "../schemas/sentence.schema";
+} from "./sentence.schema";
 
-import { checkAccessToken } from "../../../middlewares/checkAccessToken";
+import { checkAccessToken } from "../../middlewares/checkAccessToken";
 
 const router = express.Router();
+
+router.post(
+  "/",
+  checkAccessToken,
+  validateRequest({ body: createSentenceBodySchema }),
+  createSentence as unknown as RequestHandler
+);
 
 router.get(
   "/:sentenceId",
@@ -28,13 +35,6 @@ router.get(
   checkAccessToken,
   validateRequest({ query: getSentencesSchema }),
   getSentences as unknown as RequestHandler
-);
-
-router.post(
-  "/",
-  checkAccessToken,
-  validateRequest({ body: createSentenceBodySchema }),
-  createSentence as unknown as RequestHandler
 );
 
 router.delete(
